@@ -1,5 +1,6 @@
 package com.siddhesh.QuickCart.Controller;
 
+import com.siddhesh.QuickCart.Dto.ApiResponse;
 import com.siddhesh.QuickCart.Dto.ProductRequestDto;
 import com.siddhesh.QuickCart.Dto.ProductResponseDto;
 import com.siddhesh.QuickCart.Service.ProductService;
@@ -16,12 +17,22 @@ public class ProductController {
     }
 
     @GetMapping("/demo")
-    public ProductResponseDto getDemoProduct() {
-        return productService.getDemoProduct();
+    public ApiResponse<ProductResponseDto> getDemoProduct() {
+        ProductResponseDto responseDto = productService.getDemoProduct();
+        return new ApiResponse<>(
+                true,
+                "Product fetched successfully",
+                        responseDto
+        );
     }
 
     @PostMapping
-    public ProductResponseDto createProduct(@Valid @RequestBody ProductRequestDto requestDto) {
-        return productService.createProduct(requestDto);
+    public ApiResponse<ProductResponseDto> createProduct(@Valid @RequestBody ProductRequestDto requestDto) {
+        ProductResponseDto productResponseDto = productService.createProduct(requestDto);
+        return new ApiResponse<>(
+                true,
+                "Product Successfully Created",
+                productResponseDto
+        );
     }
 }
