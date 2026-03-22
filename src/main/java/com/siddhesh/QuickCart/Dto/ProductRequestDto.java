@@ -1,8 +1,10 @@
 package com.siddhesh.QuickCart.Dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductRequestDto {
     @NotBlank(message = "Product name cannot be empty!")
     public String name;

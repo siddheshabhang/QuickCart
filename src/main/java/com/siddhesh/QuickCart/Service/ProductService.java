@@ -2,15 +2,74 @@ package com.siddhesh.QuickCart.Service;
 
 import com.siddhesh.QuickCart.Dto.ProductRequestDto;
 import com.siddhesh.QuickCart.Dto.ProductResponseDto;
+import com.siddhesh.QuickCart.Entity.Product;
+import com.siddhesh.QuickCart.Exception.ResourceNotFoundException;
+import com.siddhesh.QuickCart.Repository.ProductRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
-    public ProductResponseDto getDemoProduct() {
-        return new ProductResponseDto(1L, "iPhone 17 Pro", 154900);
+
+    private final ProductRepository productRepository;
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
+    public List<ProductResponseDto> getAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(p -> new ProductResponseDto(p.getId(), p.getName(), p.getPrice()))
+                .collect(Collectors.toList());
     }
 
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
-        return new ProductResponseDto(1L, productRequestDto.getName(), productRequestDto.getPrice());
+        Product product = new Product(
+                productRequestDto.getName(),
+                productRequestDto.getPrice()
+        );
+        Product saved = productRepository.save(product);
+        return new ProductResponseDto(
+                saved.getId(),
+                saved.getName(),
+                saved.getPrice()
+        );
+    }
+
+    public ProductResponseDto getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product not found with Id " + id)
+                );
+        return new ProductResponseDto(
+                product.getId(),
+                product.getName(),
+                product.getPrice()
+        );
+    }
+
+    public ProductResponseDto updateById(Long id, ProductRequestDto requestDto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product not found with Id " + id)
+        );
+
+        product.setName(requestDto.getName());
+        product.setPrice(requestDto.getPrice());
+
+        Product updated = productRepository.save(product);
+        return new ProductResponseDto(updated.getId(),
+                updated.getName(),
+                updated.getPrice());
+    }
+    public void deleteById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product not found with Id " + id)
+                );
+        productRepository.deleteById(product.getId());
     }
 }

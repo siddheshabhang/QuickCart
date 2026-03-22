@@ -7,6 +7,8 @@ import com.siddhesh.QuickCart.Service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController {
@@ -14,16 +16,6 @@ public class ProductController {
 
     public ProductController(ProductService productService) {
         this.productService = productService;
-    }
-
-    @GetMapping("/demo")
-    public ApiResponse<ProductResponseDto> getDemoProduct() {
-        ProductResponseDto responseDto = productService.getDemoProduct();
-        return new ApiResponse<>(
-                true,
-                "Product fetched successfully",
-                        responseDto
-        );
     }
 
     @PostMapping
@@ -34,5 +26,38 @@ public class ProductController {
                 "Product Successfully Created",
                 productResponseDto
         );
+    }
+
+    @GetMapping
+    public ApiResponse<List<ProductResponseDto>> getAllProducts() {
+        return new ApiResponse<>(
+                true,
+                "All products fetched successfully!",
+                productService.getAllProducts()
+        );
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<ProductResponseDto> getProductById(@PathVariable Long id) {
+        return new ApiResponse<>(
+                true,
+                "Product fetched successfully!",
+                productService.getProductById(id)
+        );
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<ProductResponseDto> updateProductById(@PathVariable Long id, @Valid @RequestBody ProductRequestDto requestDto) {
+        return new ApiResponse<>(
+                true,
+                "Product details updated successfully",
+                productService.updateById(id, requestDto)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteById(@PathVariable Long id) {
+        productService.deleteById(id);
+        return new ApiResponse<>(true, "Product deleted", null);
     }
 }

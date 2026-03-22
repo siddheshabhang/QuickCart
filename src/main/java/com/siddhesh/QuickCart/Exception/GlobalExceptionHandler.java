@@ -2,9 +2,7 @@ package com.siddhesh.QuickCart.Exception;
 
 import com.siddhesh.QuickCart.Dto.ApiResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,5 +20,10 @@ public class GlobalExceptionHandler {
                 "Validation failed",
                 errors
         );
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ApiResponse<String> handleNotFound(ResourceNotFoundException ex) {
+        return new ApiResponse<>(false, ex.getMessage(), null);
     }
 }
