@@ -22,7 +22,7 @@ public class ProductService {
     public List<ProductResponseDto> getAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(p -> new ProductResponseDto(p.getId(), p.getName(), p.getPrice()))
+                .map(p -> new ProductResponseDto(p.getId(), p.getName(), p.getPrice(), p.getCreatedAt(), p.getUpdatedAt()))
                 .collect(Collectors.toList());
     }
 
@@ -35,7 +35,9 @@ public class ProductService {
         return new ProductResponseDto(
                 saved.getId(),
                 saved.getName(),
-                saved.getPrice()
+                saved.getPrice(),
+                saved.getCreatedAt(),
+                saved.getUpdatedAt()
         );
     }
 
@@ -47,7 +49,9 @@ public class ProductService {
         return new ProductResponseDto(
                 product.getId(),
                 product.getName(),
-                product.getPrice()
+                product.getPrice(),
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 
@@ -63,7 +67,9 @@ public class ProductService {
         Product updated = productRepository.save(product);
         return new ProductResponseDto(updated.getId(),
                 updated.getName(),
-                updated.getPrice());
+                updated.getPrice(),
+                updated.getCreatedAt(),
+                updated.getUpdatedAt());
     }
     public void deleteById(Long id) {
         Product product = productRepository.findById(id)

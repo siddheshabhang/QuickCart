@@ -1,12 +1,19 @@
 package com.siddhesh.QuickCart.Entity;
 
-import com.siddhesh.QuickCart.Controller.ProductController;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,42 +21,25 @@ public class Product {
 
     private String name;
 
-    private double price;
-
-    public Product() { }
-
     public Product(String name, double price) {
         this.name = name;
         this.price = price;
     }
 
-    public Product(Long id, String name, double price) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
+    private double price;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
