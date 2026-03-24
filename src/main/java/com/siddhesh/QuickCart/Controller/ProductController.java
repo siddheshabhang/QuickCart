@@ -5,6 +5,7 @@ import com.siddhesh.QuickCart.Dto.ProductRequestDto;
 import com.siddhesh.QuickCart.Dto.ProductResponseDto;
 import com.siddhesh.QuickCart.Service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,5 +60,16 @@ public class ProductController {
     public ApiResponse<String> deleteById(@PathVariable Long id) {
         productService.deleteById(id);
         return new ApiResponse<>(true, "Product deleted", null);
+    }
+
+    @GetMapping("/paginated")
+    public ApiResponse<Page<ProductResponseDto>> getPaginatedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam (defaultValue = "price") String sortby) {
+            return new ApiResponse<>(true,
+                    "Paginated products fetched",
+                    productService.getProductsPaginated(page, size, sortby)
+        );
     }
 }

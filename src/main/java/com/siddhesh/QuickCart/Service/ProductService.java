@@ -4,26 +4,30 @@ import com.siddhesh.QuickCart.Dto.ProductRequestDto;
 import com.siddhesh.QuickCart.Dto.ProductResponseDto;
 import com.siddhesh.QuickCart.Entity.Product;
 import com.siddhesh.QuickCart.Exception.ResourceNotFoundException;
+import com.siddhesh.QuickCart.Mapper.ProductMapper;
 import com.siddhesh.QuickCart.Repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
-
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    private final ProductMapper productMapper;
 
     public List<ProductResponseDto> getAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(p -> new ProductResponseDto(p.getId(), p.getName(), p.getPrice(), p.getCreatedAt(), p.getUpdatedAt()))
-                .collect(Collectors.toList());
+                .map(productMapper::toDto)
+                .toList();
     }
 
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
@@ -31,14 +35,7 @@ public class ProductService {
                 productRequestDto.getName(),
                 productRequestDto.getPrice()
         );
-        Product saved = productRepository.save(product);
-        return new ProductResponseDto(
-                saved.getId(),
-                saved.getName(),
-                saved.getPrice(),
-                saved.getCreatedAt(),
-                saved.getUpdatedAt()
-        );
+        return productMapper.toDto(productRepository.save(product));
     }
 
     public ProductResponseDto getProductById(Long id) {
@@ -46,13 +43,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product not found with Id " + id)
                 );
-        return new ProductResponseDto(
-                product.getId(),
-                product.getName(),
-                product.getPrice(),
-                product.getCreatedAt(),
-                product.getUpdatedAt()
-        );
+        return productMapper.toDto(product);
     }
 
     public ProductResponseDto updateById(Long id, ProductRequestDto requestDto) {
@@ -64,18 +55,20 @@ public class ProductService {
         product.setName(requestDto.getName());
         product.setPrice(requestDto.getPrice());
 
-        Product updated = productRepository.save(product);
-        return new ProductResponseDto(updated.getId(),
-                updated.getName(),
-                updated.getPrice(),
-                updated.getCreatedAt(),
-                updated.getUpdatedAt());
+        return productMapper.toDto(product);
     }
+
     public void deleteById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product not found with Id " + id)
                 );
         productRepository.deleteById(product.getId());
+    }
+
+    public Page<ProductResponseDto> getProductsPaginated(int page, int size, String sortby) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortby).descending());
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return productPage.map(productMapper::toDto);
     }
 }
