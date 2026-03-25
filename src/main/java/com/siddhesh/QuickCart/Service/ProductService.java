@@ -11,10 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.siddhesh.QuickCart.Specification.ProductSpecification.*;
 
 @Service
 @RequiredArgsConstructor
@@ -70,5 +73,23 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortby).descending());
         Page<Product> productPage = productRepository.findAll(pageable);
         return productPage.map(productMapper::toDto);
+    }
+
+    public List<ProductResponseDto> searchProducts(String name, double minPrice, double maxPrice) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCaseAndPriceBetween(name, minPrice, maxPrice);
+        return products.stream()
+                .map(productMapper::toDto)
+                .toList();
+    }
+
+    public List<ProductResponseDto> filterProducts(String name, Double minPrice, Double maxPrice) {
+        Specification<Product> spec = Specification
+                .where(hasName(name))
+                .and(hasMinPrice(minPrice))
+                .and(hasMaxPrice(maxPrice));
+        return productRepository.findAll(spec)
+                .stream()
+                .map(productMapper::toDto)
+                .toList();
     }
 }

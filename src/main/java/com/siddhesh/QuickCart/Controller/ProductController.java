@@ -72,4 +72,28 @@ public class ProductController {
                     productService.getProductsPaginated(page, size, sortby)
         );
     }
+
+    @GetMapping("/search")
+    public ApiResponse<List<ProductResponseDto>> searchProducts (
+            @RequestParam String name,
+            @RequestParam int minPrice,
+            @RequestParam int maxPrice) {
+        return new ApiResponse<>(
+                true,
+                "Filtered products fetched",
+                productService.searchProducts(name, minPrice, maxPrice)
+        );
+    }
+
+    @GetMapping("/filter")
+    public ApiResponse<List<ProductResponseDto>> filterProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice) {
+        return new ApiResponse<>(
+                true,
+                "Filtered products fetched",
+                productService.filterProducts(name, minPrice, maxPrice)
+        );
+    }
 }
