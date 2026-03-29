@@ -13,9 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.siddhesh.QuickCart.Specification.ProductSpecification.*;
 
@@ -33,6 +33,7 @@ public class ProductService {
                 .toList();
     }
 
+    @Transactional
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
         Product product = new Product(
                 productRequestDto.getName(),
@@ -49,18 +50,19 @@ public class ProductService {
         return productMapper.toDto(product);
     }
 
+    @Transactional
     public ProductResponseDto updateById(Long id, ProductRequestDto requestDto) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product not found with Id " + id)
-        );
-
+                );
         product.setName(requestDto.getName());
         product.setPrice(requestDto.getPrice());
-
+        productRepository.save(product);
         return productMapper.toDto(product);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -76,7 +78,8 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> searchProducts(String name, double minPrice, double maxPrice) {
-        List<Product> products = productRepository.findByNameContainingIgnoreCaseAndPriceBetween(name, minPrice, maxPrice);
+        List<Product> products = productRepository.findByNameContainingIgnoreCaseAndPriceBetween(
+                name, minPrice, maxPrice);
         return products.stream()
                 .map(productMapper::toDto)
                 .toList();

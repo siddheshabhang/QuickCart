@@ -13,12 +13,4 @@ public class ProductRequestDto {
 
     @Min(value = 1, message = "Price must be greater than 0")
     public double price;
-
-    public String getName() {
-        return name;
-    }
-
-    public double getPrice() {
-        return price;
-    }
 }
