@@ -4,7 +4,7 @@ import com.siddhesh.QuickCart.Dto.ApiResponse;
 import com.siddhesh.QuickCart.Dto.AuthResponse;
 import com.siddhesh.QuickCart.Dto.LoginRequest;
 import com.siddhesh.QuickCart.Dto.RegisterRequest;
-import com.siddhesh.QuickCart.Service.Impl.AuthServiceImpl;
+import com.siddhesh.QuickCart.Service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthServiceImpl authService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@RequestBody RegisterRequest request) {
