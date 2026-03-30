@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('STORE')")
     public ResponseEntity<ApiResponse<ProductResponseDto>> createProduct(@Valid @RequestBody ProductRequestDto requestDto) {
         ProductResponseDto productResponseDto = productService.createProduct(requestDto);
         return new ResponseEntity<>(new ApiResponse<>(
@@ -30,6 +32,7 @@ public class ProductController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('CUSTOMER','STORE')")
     public ResponseEntity<ApiResponse<List<ProductResponseDto>>> getAllProducts() {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
@@ -39,6 +42,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CUSTOMER','STORE')")
     public ResponseEntity<ApiResponse<ProductResponseDto>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
@@ -48,6 +52,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('STORE')")
     public ResponseEntity<ApiResponse<ProductResponseDto>> updateProductById(@PathVariable Long id, @Valid @RequestBody ProductRequestDto requestDto) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
@@ -57,12 +62,14 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('STORE')")
     public ResponseEntity<ApiResponse<String>> deleteById(@PathVariable Long id) {
         productService.deleteById(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "Product deleted", null));
     }
 
     @GetMapping("/paginated")
+    @PreAuthorize("hasAnyRole('CUSTOMER','STORE')")
     public ResponseEntity<ApiResponse<Page<ProductResponseDto>>> getPaginatedProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -75,6 +82,7 @@ public class ProductController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('CUSTOMER','STORE')")
     public ResponseEntity<ApiResponse<List<ProductResponseDto>>> searchProducts(
             @RequestParam String name,
             @RequestParam double minPrice,
@@ -87,6 +95,7 @@ public class ProductController {
     }
 
     @GetMapping("/filter")
+    @PreAuthorize("hasAnyRole('CUSTOMER','STORE')")
     public ResponseEntity<ApiResponse<List<ProductResponseDto>>> filterProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Double minPrice,
