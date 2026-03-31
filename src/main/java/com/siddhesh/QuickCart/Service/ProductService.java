@@ -35,10 +35,15 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
-        Product product = new Product(
-                productRequestDto.getName(),
-                productRequestDto.getPrice()
-        );
+        if(productRequestDto.getStock() < 0) {
+            throw new RuntimeException("Stock cannot be negative");
+        }
+        Product product = Product.builder()
+                .name(productRequestDto.getName())
+                .price(productRequestDto.getPrice())
+                .description(productRequestDto.getDescription())
+                .stock(productRequestDto.getStock())
+                .build();
         return productMapper.toDto(productRepository.save(product));
     }
 
@@ -54,10 +59,16 @@ public class ProductService {
     public ProductResponseDto updateById(Long id, ProductRequestDto requestDto) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Product not found with Id " + id)
-                );
+                        "Product not found with Id " + id));
+
+        if(product.getStock() < 0) {
+            throw new RuntimeException("Stock cannot be negative");
+        }
         product.setName(requestDto.getName());
         product.setPrice(requestDto.getPrice());
+        product.setDescription(requestDto.getDescription());
+        product.setStock(requestDto.getStock());
+
         productRepository.save(product);
         return productMapper.toDto(product);
     }

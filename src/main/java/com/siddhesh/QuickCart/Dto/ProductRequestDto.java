@@ -13,4 +13,8 @@ public class ProductRequestDto {
 
     @Min(value = 1, message = "Price must be greater than 0")
     public double price;
+
+    String description;
+
+    Integer stock;
 }
