@@ -6,6 +6,7 @@ import com.siddhesh.QuickCart.Dto.RegisterRequest;
 import com.siddhesh.QuickCart.Entity.AuthProvider;
 import com.siddhesh.QuickCart.Entity.Role;
 import com.siddhesh.QuickCart.Entity.User;
+import com.siddhesh.QuickCart.Exception.DuplicateResourceException;
 import com.siddhesh.QuickCart.Repository.UserRepository;
 import com.siddhesh.QuickCart.Security.JwtService;
 import com.siddhesh.QuickCart.Service.AuthService;
@@ -22,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists!");
+            throw new DuplicateResourceException("Email already registered: " + request.getEmail());
         }
         User user = User.builder()
                 .name(request.getName())
