@@ -2,7 +2,6 @@ package com.siddhesh.QuickCart.Controller;
 
 import com.siddhesh.QuickCart.Dto.AddToCartReq;
 import com.siddhesh.QuickCart.Dto.ApiResponse;
-import com.siddhesh.QuickCart.Dto.RegisterRequest;
 import com.siddhesh.QuickCart.Service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
