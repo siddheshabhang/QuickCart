@@ -2,6 +2,7 @@ package com.siddhesh.QuickCart.Service;
 
 import com.siddhesh.QuickCart.Dto.OrderResponseDto;
 import com.siddhesh.QuickCart.Entity.*;
+import com.siddhesh.QuickCart.Exception.ResourceNotFoundException;
 import com.siddhesh.QuickCart.Mapper.OrderMapper;
 import com.siddhesh.QuickCart.Repository.CartRepository;
 import com.siddhesh.QuickCart.Repository.OrderRepository;
@@ -36,35 +37,29 @@ public class OrderService {
     public OrderResponseDto placeOrder() {
         User user = getCurrentUser();
         Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found for user: " + user.getEmail()));
 
         if(cart.getItems() == null || cart.getItems().isEmpty()) {
-            throw new RuntimeException("Cart is empty");
+            throw new IllegalArgumentException("Cart is empty");
         }
 
         List<OrderItem> orderItems = new ArrayList<>();
         double total = 0;
 
         //Step 1: Validate + Deduct Stock
-        for(CartItem cartItem : cart.getItems()) {
+        for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
-
-            if(cartItem.getQuantity() > product.getStock()) {
-                throw new RuntimeException("Insufficient stock for product: " + product.getName());
-            }
-
-            product.setStock(product.getStock() - cartItem.getQuantity());
+            product.deductStock(cartItem.getQuantity()); // validates + deducts in one call
             productRepository.save(product);
 
-            OrderItem orderItem = OrderItem.builder()
+            orderItems.add(OrderItem.builder()
                     .productId(product.getId())
                     .productName(product.getName())
                     .price(product.getPrice())
                     .quantity(cartItem.getQuantity())
-                    .build();
+                    .build());
 
             total += product.getPrice() * cartItem.getQuantity();
-            orderItems.add(orderItem);
         }
 
         // Step 2: Create Order

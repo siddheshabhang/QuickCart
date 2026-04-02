@@ -17,16 +17,8 @@ public class Product {
     private Long id;
 
     private String name;
-
-    public Product(String name, double price) {
-        this.name = name;
-        this.price = price;
-    }
-
     private double price;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
@@ -47,5 +39,12 @@ public class Product {
 
     public boolean isAvailable() {
         return this.stock > 0;
+    }
+
+    public void deductStock(int quantity) {
+        if (quantity > this.stock) {
+            throw new IllegalArgumentException("Insufficient stock for: " + this.name);
+        }
+        this.stock -= quantity;
     }
 }

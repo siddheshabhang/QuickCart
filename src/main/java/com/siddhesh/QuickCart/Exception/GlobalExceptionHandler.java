@@ -69,7 +69,14 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(false, "Malformed JSON request body", null));
     }
 
-    // 7. Catch-all — always keep this last
+    // 7. 400 Bad Request — business rule violations (e.g. invalid quantity, insufficient stock)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ApiResponse<>(false, ex.getMessage(), null));
+    }
+
+    // 8. Catch-all — always keep this last
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
         // Log the real error internally; never expose stack traces to clients
