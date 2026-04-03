@@ -90,4 +90,10 @@ public class OrderService {
                 .map(orderMapper::toDto)
                 .toList();
     }
+
+    private void validateOrderOwnership(Order order, User user) {
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access to order");
+        }
+    }
 }

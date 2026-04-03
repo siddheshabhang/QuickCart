@@ -7,7 +7,9 @@ import com.siddhesh.QuickCart.Mapper.PaymentMapper;
 import com.siddhesh.QuickCart.Repository.OrderRepository;
 import com.siddhesh.QuickCart.Repository.PaymentRepository;
 import com.siddhesh.QuickCart.Repository.ProductRepository;
+import com.siddhesh.QuickCart.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +23,25 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ProductRepository productRepository;
     private final PaymentMapper paymentMapper;
+    private final UserRepository userRepository;
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 
     @Transactional
     public PaymentResponseDto processPayment(Long orderId, boolean simulateSuccess) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+
+        User currentUser = getCurrentUser();
+        if (!order.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Unauthorized payment attempt");
+        }
 
         // Check existing payment
         Payment payment = paymentRepository.findByOrder(order).orElse(null);
