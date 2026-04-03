@@ -29,6 +29,10 @@ public class Order {
 
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

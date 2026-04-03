@@ -67,6 +67,7 @@ public class OrderService {
                 .user(user)
                 .totalAmount(total)
                 .items(orderItems)
+                .status(OrderStatus.CREATED)
                 .build();
         // Link back
         for (OrderItem item : orderItems) {

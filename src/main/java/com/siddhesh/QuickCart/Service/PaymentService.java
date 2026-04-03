@@ -44,6 +44,8 @@ public class PaymentService {
             payment = paymentRepository.save(payment);
         }
 
+        order.setStatus(OrderStatus.PAYMENT_PENDING);
+
         // Process Payment
         if (simulateSuccess) {
             // If retry after failure → re-deduct stock
@@ -51,11 +53,13 @@ public class PaymentService {
                 deductStock(order);
             }
             payment.setStatus(PaymentStatus.SUCCESS);
+            order.setStatus(OrderStatus.PAID);
         } else {
             if (payment.getStatus() != PaymentStatus.FAILED) {
                 restoreStock(order);
             }
             payment.setStatus(PaymentStatus.FAILED);
+            order.setStatus(OrderStatus.FAILED);
         }
         payment = paymentRepository.save(payment);
         return paymentMapper.toDto(payment);
