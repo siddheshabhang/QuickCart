@@ -1,6 +1,8 @@
 package com.siddhesh.QuickCart.Service;
 
 import com.siddhesh.QuickCart.Dto.AddToCartReq;
+import com.siddhesh.QuickCart.Dto.CartItemDto;
+import com.siddhesh.QuickCart.Dto.CartResponseDto;
 import com.siddhesh.QuickCart.Entity.Cart;
 import com.siddhesh.QuickCart.Entity.CartItem;
 import com.siddhesh.QuickCart.Entity.Product;
@@ -15,6 +17,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -84,5 +89,34 @@ public class CartService {
             throw new AccessDeniedException("You don't have permission to remove this item");
         }
         cartItemRepository.delete(item);
+    }
+
+    public CartResponseDto getCart() {
+
+        User user = getCurrentUser();
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        double total = 0;
+
+        List<CartItemDto> items = new ArrayList<>();
+
+        for (CartItem item : cart.getItems()) {
+            double itemTotal = item.getProduct().getPrice() * item.getQuantity();
+            total += itemTotal;
+            items.add(
+                    CartItemDto.builder()
+                            .productId(item.getProduct().getId())
+                            .productName(item.getProduct().getName())
+                            .price(item.getProduct().getPrice())
+                            .quantity(item.getQuantity())
+                            .build()
+            );
+        }
+        return CartResponseDto.builder()
+                .items(items)
+                .totalAmount(total)
+                .build();
     }
 }
