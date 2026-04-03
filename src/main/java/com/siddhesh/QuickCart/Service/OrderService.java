@@ -1,5 +1,6 @@
 package com.siddhesh.QuickCart.Service;
 
+import com.siddhesh.QuickCart.Dto.OrderRequestDto;
 import com.siddhesh.QuickCart.Dto.OrderResponseDto;
 import com.siddhesh.QuickCart.Entity.*;
 import com.siddhesh.QuickCart.Exception.ResourceNotFoundException;
@@ -34,7 +35,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto placeOrder() {
+    public OrderResponseDto placeOrder(OrderRequestDto requestDto) {
         User user = getCurrentUser();
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found for user: " + user.getEmail()));
@@ -68,6 +69,8 @@ public class OrderService {
                 .totalAmount(total)
                 .items(orderItems)
                 .status(OrderStatus.CREATED)
+                .address(requestDto.getAddress())
+                .phoneNumber(requestDto.getPhoneNumber())
                 .build();
         // Link back
         for (OrderItem item : orderItems) {

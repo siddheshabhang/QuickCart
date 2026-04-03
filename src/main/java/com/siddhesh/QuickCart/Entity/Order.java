@@ -36,6 +36,12 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<Payment> payments;
 
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String phoneNumber;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
