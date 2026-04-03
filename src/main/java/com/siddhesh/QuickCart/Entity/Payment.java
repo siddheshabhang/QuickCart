@@ -17,7 +17,7 @@ public class Payment {
     private Long id;
 
     // Link to order
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
