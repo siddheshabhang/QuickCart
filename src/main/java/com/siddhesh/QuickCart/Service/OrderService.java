@@ -81,4 +81,13 @@ public class OrderService {
 
         return orderMapper.toDto(savedOrder);
     }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponseDto> getUserOrders() {
+        User user = getCurrentUser();
+        List<Order> orders = orderRepository.findByUser(user);
+        return orders.stream()
+                .map(orderMapper::toDto)
+                .toList();
+    }
 }
