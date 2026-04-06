@@ -8,6 +8,8 @@ import com.siddhesh.QuickCart.Repository.OrderRepository;
 import com.siddhesh.QuickCart.Repository.PaymentRepository;
 import com.siddhesh.QuickCart.Repository.ProductRepository;
 import com.siddhesh.QuickCart.Repository.UserRepository;
+import com.siddhesh.QuickCart.kafka.PaymentProducer;
+import com.siddhesh.QuickCart.kafka.event.PaymentCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class PaymentService {
     private final ProductRepository productRepository;
     private final PaymentMapper paymentMapper;
     private final UserRepository userRepository;
+    public final PaymentProducer paymentProducer;
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext()
@@ -62,6 +65,7 @@ public class PaymentService {
 
         order.setStatus(OrderStatus.PAYMENT_PENDING);
 
+        PaymentStatus finalStatus;
         // Process Payment
         if (simulateSuccess) {
             // If retry after failure → re-deduct stock
@@ -69,15 +73,32 @@ public class PaymentService {
                 deductStock(order);
             }
             payment.setStatus(PaymentStatus.SUCCESS);
+            finalStatus = PaymentStatus.SUCCESS;
             order.setStatus(OrderStatus.PAID);
         } else {
             if (payment.getStatus() != PaymentStatus.FAILED) {
                 restoreStock(order);
             }
             payment.setStatus(PaymentStatus.FAILED);
+            finalStatus = PaymentStatus.FAILED;
             order.setStatus(OrderStatus.FAILED);
         }
         payment = paymentRepository.save(payment);
+
+        PaymentCompletedEvent event = PaymentCompletedEvent.builder()
+                .orderId(order.getId())
+                .userId(order.getUser().getId())
+                .status(finalStatus)
+                .amount(order.getTotalAmount())
+                .build();
+
+        try {
+            paymentProducer.publishPaymentEvent(event);
+        } catch (Exception e) {
+            // Do NOT break payment flow
+            System.out.println("Kafka publish failed: " + e.getMessage());
+        }
+
         return paymentMapper.toDto(payment);
     }
 
