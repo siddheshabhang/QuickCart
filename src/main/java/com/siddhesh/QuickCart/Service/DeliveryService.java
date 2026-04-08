@@ -14,10 +14,15 @@ import org.springframework.stereotype.Service;
 public class DeliveryService {
     private final OrderRepository orderRepository;
     private final DeliveryProducer deliveryProducer;
+    private final OtpService otpService;
 
     public void updateStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        if (newStatus == OrderStatus.OUT_FOR_DELIVERY) {
+            otpService.generateOtp(orderId);
+        }
 
         validateTransition(order.getStatus(), newStatus);
         order.setStatus(newStatus);
@@ -33,7 +38,29 @@ public class DeliveryService {
 
     private void validateTransition(OrderStatus current, OrderStatus next) {
         if (current == OrderStatus.ASSIGNED && next == OrderStatus.OUT_FOR_DELIVERY) return;
-        if (current == OrderStatus.OUT_FOR_DELIVERY && next == OrderStatus.DELIVERED) return;
         throw new RuntimeException("Invalid status transition");
+    }
+
+    public void verifyOtp(Long orderId, String otp) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        if (order.getStatus() != OrderStatus.OUT_FOR_DELIVERY) {
+            throw new RuntimeException("OTP can only be verified in OUT_FOR_DELIVERY state");
+        }
+
+        boolean isValid = otpService.verifyOtp(orderId, otp);
+        if (!isValid) {
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        order.setStatus(OrderStatus.DELIVERED);
+        orderRepository.save(order);
+
+        DeliveryStatusChangedEvent event = new DeliveryStatusChangedEvent(
+                order.getId(),
+                order.getUser().getId(),
+                OrderStatus.DELIVERED);
+        deliveryProducer.publishDeliveryStatusEvent(event);
     }
 }
