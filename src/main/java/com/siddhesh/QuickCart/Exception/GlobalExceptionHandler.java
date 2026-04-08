@@ -76,7 +76,15 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(false, ex.getMessage(), null));
     }
 
-    // 8. Catch-all — always keep this last
+    // 8. Missing required @RequestParam
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingParam(
+            MissingServletRequestParameterException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ApiResponse<>(false, "Missing required parameter: " + ex.getParameterName(), null));
+    }
+
+    // 9. Catch-all — always keep this last
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
         // Log the real error internally; never expose stack traces to clients

@@ -26,7 +26,8 @@ public class PaymentService {
     private final ProductRepository productRepository;
     private final PaymentMapper paymentMapper;
     private final UserRepository userRepository;
-    public final PaymentProducer paymentProducer;
+    private final PaymentProducer paymentProducer;
+    private final OrderAssignmentService orderAssignmentService;
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext()
@@ -74,7 +75,8 @@ public class PaymentService {
             }
             payment.setStatus(PaymentStatus.SUCCESS);
             finalStatus = PaymentStatus.SUCCESS;
-            order.setStatus(OrderStatus.PAID);
+            order.setStatus(OrderStatus.CONFIRMED);
+            orderAssignmentService.assignPartner(order);
         } else {
             if (payment.getStatus() != PaymentStatus.FAILED) {
                 restoreStock(order);

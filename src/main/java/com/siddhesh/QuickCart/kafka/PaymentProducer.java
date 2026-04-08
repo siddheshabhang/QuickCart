@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PaymentProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
-
-    // Create directly — avoids Spring Boot 4.x Jackson 3.x bean conflict
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     private static final String TOPIC = "payment-events";
 

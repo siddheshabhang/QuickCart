@@ -1,10 +1,10 @@
 package com.siddhesh.QuickCart.kafka;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.siddhesh.QuickCart.kafka.event.PaymentCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.ObjectMapper;
 
 @Component
 @RequiredArgsConstructor
@@ -24,5 +24,10 @@ public class NotificationConsumer {
         } catch (Exception e) {
             System.out.println("Kafka consume error: " + e.getMessage());
         }
+    }
+
+    @KafkaListener(topics = "delivery-events", groupId = "notification-group")
+    public void consumeDeliveryEvents(String message) {
+        System.out.println("🚚 Delivery Event: " + message);
     }
 }

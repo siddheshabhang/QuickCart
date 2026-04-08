@@ -20,6 +20,7 @@ public class OrderMapper {
                                 .quantity(item.getQuantity())
                                 .build())
                         .toList())
+                .status(order.getStatus())
                 .build();
     }
 }
