@@ -17,16 +17,6 @@
         <module>delivery-service</module>
         <module>notification-service</module>
         <module>common-lib</module>
-        <module>discovery-server</module>
-        <module>api-gateway</module>
-        <module>auth-service</module>
-        <module>product-service</module>
-        <module>cart-service</module>
-        <module>order-service</module>
-        <module>payment-service</module>
-        <module>delivery-service</module>
-        <module>notification-service</module>
-        <module>common-lib</module>
     </modules>
 
     <properties>
