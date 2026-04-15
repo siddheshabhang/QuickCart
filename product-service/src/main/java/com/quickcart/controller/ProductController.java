@@ -45,7 +45,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
-    public ResponseEntity<ApiResponse<ProductResponseDto>> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ProductResponseDto>> getProductById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "Product fetched successfully!",
@@ -56,7 +56,7 @@ public class ProductController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('STORE')")
     public ResponseEntity<ApiResponse<ProductResponseDto>> updateProductById(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ProductRequestDto requestDto) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
@@ -67,7 +67,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('STORE')")
-    public ResponseEntity<ApiResponse<String>> deleteById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteById(@PathVariable("id") Long id) {
         productService.deleteById(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "Product deleted", null));
     }
@@ -75,9 +75,10 @@ public class ProductController {
     @GetMapping("/paginated")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
     public ResponseEntity<ApiResponse<Page<ProductResponseDto>>> getPaginatedProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "price") String sortby) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "sortby", defaultValue = "price") String sortby) {
+
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "Paginated products fetched",
@@ -88,9 +89,9 @@ public class ProductController {
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
     public ResponseEntity<ApiResponse<List<ProductResponseDto>>> searchProducts(
-            @RequestParam String name,
-            @RequestParam double minPrice,
-            @RequestParam double maxPrice) {
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "minPrice") double minPrice,
+            @RequestParam(name = "maxPrice") double maxPrice) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "Filtered products fetched",
@@ -101,9 +102,9 @@ public class ProductController {
     @GetMapping("/filter")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
     public ResponseEntity<ApiResponse<List<ProductResponseDto>>> filterProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice) {
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "minPrice", required = false) Double minPrice,
+            @RequestParam(name = "maxPrice", required = false) Double maxPrice) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "Filtered products fetched",
