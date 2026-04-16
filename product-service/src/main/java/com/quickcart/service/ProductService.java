@@ -2,7 +2,7 @@ package com.quickcart.service;
 
 import com.quickcart.common.exception.ResourceNotFoundException;
 import com.quickcart.dto.ProductRequestDto;
-import com.quickcart.dto.ProductResponseDto;
+import com.quickcart.common.dto.ProductResponseDto;
 import com.quickcart.entity.Product;
 import com.quickcart.mapper.ProductMapper;
 import com.quickcart.repository.ProductRepository;

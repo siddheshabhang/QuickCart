@@ -1,6 +1,6 @@
 package com.quickcart.mapper;
 
-import com.quickcart.dto.ProductResponseDto;
+import com.quickcart.common.dto.ProductResponseDto;
 import com.quickcart.entity.Product;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +13,7 @@ public class ProductMapper {
                 product.getPrice(),
                 product.getDescription(),
                 product.getStock(),
+                product.isAvailable(),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );
