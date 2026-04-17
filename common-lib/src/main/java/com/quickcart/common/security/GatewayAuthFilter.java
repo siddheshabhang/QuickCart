@@ -36,16 +36,18 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String email = request.getHeader("X-User-Email");
-        String role  = request.getHeader("X-User-Role");
+        String email  = request.getHeader("X-User-Email");
+        String role   = request.getHeader("X-User-Role");
+        String userId = request.getHeader("X-User-Id");
 
-        if (email != null && !email.isBlank()
-                && role != null && !role.isBlank()
+        if (userId != null && !userId.isBlank()
+                && role  != null && !role.isBlank()
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Spring Security expects "ROLE_" prefix for hasRole() / hasAnyRole()
             var authority = new SimpleGrantedAuthority("ROLE_" + role);
-            var auth      = new UsernamePasswordAuthenticationToken(email, null, List.of(authority));
+            // Use userId as principal so services can parse it directly as Long
+            var auth      = new UsernamePasswordAuthenticationToken(userId, null, List.of(authority));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 

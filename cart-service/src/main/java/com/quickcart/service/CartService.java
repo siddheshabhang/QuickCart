@@ -43,7 +43,7 @@ public class CartService {
         Long userId = getCurrentUserId();
 
         // Validate product via Feign — product-service is the source of truth
-        ProductResponseDto product = productClient.getProductById(cartReq.getProductId());
+        ProductResponseDto product = productClient.getProductById(cartReq.getProductId()).getData();
 
         if (cartReq.getQuantity() <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
@@ -103,15 +103,23 @@ public class CartService {
     public CartResponseDto getCart() {
         Long userId = getCurrentUserId();
 
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found for user"));
+        // If user has never added to cart, return empty cart instead of 500
+        Cart cart = cartRepository.findByUserId(userId).orElse(null);
+        if (cart == null) {
+            return CartResponseDto.builder()
+                    .items(new ArrayList<>())
+                    .totalAmount(0.0)
+                    .build();
+        }
 
         List<CartItemDto> items = new ArrayList<>();
         double total = 0;
 
-        for (CartItem item : cart.getItems()) {
+        List<CartItem> cartItems = cart.getItems() != null ? cart.getItems() : java.util.Collections.emptyList();
+
+        for (CartItem item : cartItems) {
             // Enrich each cart item with live product data from product-service
-            ProductResponseDto product = productClient.getProductById(item.getProductId());
+            ProductResponseDto product = productClient.getProductById(item.getProductId()).getData();
             double itemTotal = product.getPrice() * item.getQuantity();
             total += itemTotal;
 

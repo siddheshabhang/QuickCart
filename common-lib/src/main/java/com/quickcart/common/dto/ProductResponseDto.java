@@ -1,20 +1,28 @@
 package com.quickcart.common.dto;
 
-import lombok.Value;
+import lombok.*;
 import java.time.LocalDateTime;
 
 /**
  * Shared DTO representing a product — used by product-service (to produce)
  * and cart-service / other services (to consume via Feign clients).
+ *
+ * NOTE: Must NOT use @Value here. @Value makes all fields final which
+ * prevents Jackson from deserializing it in Feign clients (no no-arg
+ * constructor / setters). Use @Getter + @Setter + @NoArgsConstructor instead.
  */
-@Value
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProductResponseDto {
-    Long id;
-    String name;
-    double price;
-    String description;
-    Integer stock;
-    boolean available;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    private Long id;
+    private String name;
+    private double price;
+    private String description;
+    private Integer stock;
+    private boolean available;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

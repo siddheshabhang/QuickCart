@@ -26,7 +26,7 @@ public class CartController {
 
     @DeleteMapping("/remove/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<ApiResponse<Void>> removeFromCart(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> removeFromCart(@PathVariable("id") Long id) {
         cartService.removeFromCart(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "Removed from cart", null));
     }
