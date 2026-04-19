@@ -111,4 +111,11 @@ public class ProductController {
                 productService.filterProducts(name, minPrice, maxPrice)
         ));
     }
+
+    @PutMapping("/{id}/deduct-stock")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
+    public ResponseEntity<ApiResponse<Void>> deductStock(@PathVariable("id") Long id, @RequestParam("quantity") int quantity) {
+        productService.deductStock(id, quantity);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Stock deducted", null));
+    }
 }

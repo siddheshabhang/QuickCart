@@ -126,4 +126,12 @@ public class ProductService {
             return cb.lessThanOrEqualTo(root.get("price"), maxPrice);
         };
     }
+
+    @Transactional
+    public void deductStock(Long id, int quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with Id " + id));
+        product.deductStock(quantity);
+        productRepository.save(product);
+    }
 }

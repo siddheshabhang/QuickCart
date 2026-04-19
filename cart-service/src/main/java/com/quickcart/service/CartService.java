@@ -138,4 +138,13 @@ public class CartService {
                 .totalAmount(total)
                 .build();
     }
+
+    @Transactional
+    public void clearCart() {
+        Long userId = getCurrentUserId();
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+        cart.getItems().clear();
+        cartRepository.save(cart);
+    }
 }

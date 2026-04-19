@@ -37,5 +37,11 @@ public class CartController {
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Cart fetched", cartService.getCart()));
     }
+
+    @DeleteMapping("/clear")
+    public ResponseEntity<ApiResponse<Void>> clearCart() {
+        cartService.clearCart();
+        return ResponseEntity.ok(new ApiResponse<>(true, "Cart cleared", null));
+    }
 }
 
