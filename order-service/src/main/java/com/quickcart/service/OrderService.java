@@ -1,6 +1,7 @@
 package com.quickcart.service;
 
 
+import com.quickcart.common.exception.ResourceNotFoundException;
 import com.quickcart.dto.*;
 import com.quickcart.entity.Order;
 import com.quickcart.entity.OrderItem;
@@ -18,7 +19,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class
+OrderService {
     private final OrderRepository orderRepository;
     private final CartClient cartClient;
     private final ProductClient productClient;
@@ -102,4 +104,19 @@ public class OrderService {
                 .status(order.getStatus())
                 .build();
     }
+
+    public OrderResponseDto getOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        return toDto(order);
+    }
+
+    @Transactional
+    public void updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        order.setStatus(status);
+        orderRepository.save(order);
+    }
+
 }
