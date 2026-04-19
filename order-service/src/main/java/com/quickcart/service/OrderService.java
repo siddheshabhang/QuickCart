@@ -1,6 +1,7 @@
 package com.quickcart.service;
 
 
+import com.quickcart.common.event.OrderCreatedEvent;
 import com.quickcart.common.exception.ResourceNotFoundException;
 import com.quickcart.dto.*;
 import com.quickcart.entity.Order;
@@ -8,6 +9,7 @@ import com.quickcart.entity.OrderItem;
 import com.quickcart.entity.OrderStatus;
 import com.quickcart.feign.CartClient;
 import com.quickcart.feign.ProductClient;
+import com.quickcart.kafka.OrderProducer;
 import com.quickcart.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +26,7 @@ OrderService {
     private final OrderRepository orderRepository;
     private final CartClient cartClient;
     private final ProductClient productClient;
+    private final OrderProducer orderProducer;
 
     private Long getCurrentUserId() {
         String principal = SecurityContextHolder.getContext()
@@ -74,6 +77,12 @@ OrderService {
         Order savedOrder = orderRepository.save(order);
 
         cartClient.clearCart();
+
+        orderProducer.publishOrderCreated(OrderCreatedEvent.builder()
+                .orderId(savedOrder.getId())
+                .userId(userId)
+                .totalAmount(savedOrder.getTotalAmount())
+                .build());
 
         return toDto(savedOrder);
     }

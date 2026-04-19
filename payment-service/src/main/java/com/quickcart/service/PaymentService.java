@@ -1,5 +1,6 @@
 package com.quickcart.service;
 
+import com.quickcart.common.event.PaymentCompletedEvent;
 import com.quickcart.dto.OrderResponseDto;
 import com.quickcart.dto.OrderStatus;
 import com.quickcart.dto.PaymentRequestDto;
@@ -7,6 +8,7 @@ import com.quickcart.dto.PaymentResponseDto;
 import com.quickcart.entity.Payment;
 import com.quickcart.entity.PaymentStatus;
 import com.quickcart.feign.OrderClient;
+import com.quickcart.kafka.PaymentProducer;
 import com.quickcart.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,7 @@ import java.util.UUID;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderClient orderClient;
+    private final PaymentProducer paymentProducer;
 
     private Long getCurrentUserId() {
         String principal = SecurityContextHolder.getContext()
@@ -56,6 +59,13 @@ public class PaymentService {
         }
 
         paymentRepository.save(payment);
+
+        paymentProducer.publishPaymentCompleted(PaymentCompletedEvent.builder()
+                .orderId(requestDto.getOrderId())
+                .userId(order.getUserId())
+                .status(payment.getStatus().name())
+                .amount(payment.getAmount())
+                .build());
         return toDto(payment);
     }
 
