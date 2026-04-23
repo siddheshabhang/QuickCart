@@ -25,7 +25,7 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final ProductClient productClient;
+    private final ProductHelperService productHelperService;
 
     private Long getCurrentUserId() {
         String principal = SecurityContextHolder.getContext()
@@ -43,7 +43,7 @@ public class CartService {
         Long userId = getCurrentUserId();
 
         // Validate product via Feign — product-service is the source of truth
-        ProductResponseDto product = productClient.getProductById(cartReq.getProductId()).getData();
+        ProductResponseDto product = productHelperService.getProductById(cartReq.getProductId()).getData();
 
         if (cartReq.getQuantity() <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
@@ -119,7 +119,7 @@ public class CartService {
 
         for (CartItem item : cartItems) {
             // Enrich each cart item with live product data from product-service
-            ProductResponseDto product = productClient.getProductById(item.getProductId()).getData();
+            ProductResponseDto product = productHelperService.getProductById(item.getProductId()).getData();
             double itemTotal = product.getPrice() * item.getQuantity();
             total += itemTotal;
 

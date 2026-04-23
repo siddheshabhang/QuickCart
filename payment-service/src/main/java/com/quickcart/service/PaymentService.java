@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
-    private final OrderClient orderClient;
+    private final OrderHelperService orderHelperService;
     private final PaymentProducer paymentProducer;
 
     private Long getCurrentUserId() {
@@ -34,7 +34,7 @@ public class PaymentService {
     public PaymentResponseDto processPayment(PaymentRequestDto requestDto) {
         Long userId = getCurrentUserId();
 
-        OrderResponseDto order = orderClient.getOrderById(requestDto.getOrderId()).getData();
+        OrderResponseDto order = orderHelperService.getOrderById(requestDto.getOrderId()).getData();
         Optional<Payment> existingPayment = paymentRepository.findByOrderId(requestDto.getOrderId());
 
         if (existingPayment.isPresent() && existingPayment.get().getStatus() == PaymentStatus.SUCCESS) {
@@ -52,10 +52,10 @@ public class PaymentService {
 
         if (requestDto.isSimulateSuccess()) {
             payment.setStatus(PaymentStatus.SUCCESS);
-            orderClient.updateOrderStatus(requestDto.getOrderId(), OrderStatus.CONFIRMED);
+            orderHelperService.updateOrderStatus(requestDto.getOrderId(), OrderStatus.CONFIRMED);
         } else {
             payment.setStatus(PaymentStatus.FAILED);
-            orderClient.updateOrderStatus(requestDto.getOrderId(), OrderStatus.FAILED);
+            orderHelperService.updateOrderStatus(requestDto.getOrderId(), OrderStatus.FAILED);
         }
 
         paymentRepository.save(payment);

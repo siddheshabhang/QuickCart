@@ -24,8 +24,8 @@ import java.util.List;
 public class
 OrderService {
     private final OrderRepository orderRepository;
-    private final CartClient cartClient;
-    private final ProductClient productClient;
+    private final CartHelperService cartHelperService;
+    private final ProductHelperService productHelperService;
     private final OrderProducer orderProducer;
 
     private Long getCurrentUserId() {
@@ -39,7 +39,7 @@ OrderService {
     public OrderResponseDto placeOrder(OrderRequestDto requestDto) {
         Long userId = getCurrentUserId();
 
-        CartResponseDto cart = cartClient.getCart().getData();
+        CartResponseDto cart = cartHelperService.getCart().getData();
 
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
@@ -49,7 +49,7 @@ OrderService {
         double total = 0;
 
         for (CartItemDto cartItem : cart.getItems()) {
-            productClient.deductStock(cartItem.getProductId(), cartItem.getQuantity());
+            productHelperService.deductStock(cartItem.getProductId(), cartItem.getQuantity());
 
             orderItems.add(OrderItem.builder()
                     .productId(cartItem.getProductId())
@@ -76,7 +76,7 @@ OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        cartClient.clearCart();
+        cartHelperService.clearCart();
 
         orderProducer.publishOrderCreated(OrderCreatedEvent.builder()
                 .orderId(savedOrder.getId())
