@@ -33,6 +33,11 @@ spring:
           predicates:
             - Path=/payment/**
 
+        - id: delivery-service
+          uri: lb://DELIVERY-SERVICE
+          predicates:
+            - Path=/delivery/**
+
 eureka:
   client:
     service-url:

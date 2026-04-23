@@ -1,6 +1,7 @@
 package com.quickcart.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quickcart.common.event.DeliveryStatusChangedEvent;
 import com.quickcart.common.event.OrderCreatedEvent;
 import com.quickcart.common.event.PaymentCompletedEvent;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,17 @@ public class NotificationConsumer {
             }
         } catch (Exception e) {
             log.error("Failed to consume payment event: {}", e.getMessage());
+        }
+    }
+
+    @KafkaListener(topics = "delivery-events", groupId = "notification-group")
+    public void consumeDeliveryEvent(String message) {
+        try {
+            DeliveryStatusChangedEvent event = objectMapper.readValue(message, DeliveryStatusChangedEvent.class);
+            log.info("🚚 Delivery status update → orderId: {}, status: {}",
+                    event.getOrderId(), event.getStatus());
+        } catch (Exception e) {
+            log.error("Failed to consume delivery event: {}", e.getMessage());
         }
     }
 }

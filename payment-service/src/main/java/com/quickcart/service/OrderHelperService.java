@@ -15,7 +15,7 @@ public class OrderHelperService {
     private final OrderClient orderClient;
 
     @CircuitBreaker(name = "orderService", fallbackMethod = "getOrderFallback")
-    @Retry(name = "orderService")
+    @Retry(name = "orderServiceRead")
     public ApiResponse<OrderResponseDto> getOrderById(Long orderId) {
         return orderClient.getOrderById(orderId);
     }

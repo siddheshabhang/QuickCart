@@ -14,7 +14,7 @@ public class CartHelperService {
     private final CartClient cartClient;
 
     @CircuitBreaker(name = "cartService", fallbackMethod = "getCartFallback")
-    @Retry(name = "cartService")
+    @Retry(name = "cartServiceRead")
     public ApiResponse<CartResponseDto> getCart() {
         return cartClient.getCart();
     }
