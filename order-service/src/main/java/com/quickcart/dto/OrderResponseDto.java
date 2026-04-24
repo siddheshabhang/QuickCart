@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class OrderResponseDto {
     private Long orderId;
+    private Long userId;
     private Double totalAmount;
     private List<OrderItemDto> items;
     private OrderStatus status;

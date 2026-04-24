@@ -63,12 +63,10 @@ public class CartService {
                         Cart.builder().userId(userId).build()
                 ));
 
-        // Check if this product already exists in the cart
-        CartItem existingItem = (cart.getItems() == null) ? null :
-                cart.getItems().stream()
-                        .filter(item -> item.getProductId().equals(product.getId()))
-                        .findFirst()
-                        .orElse(null);
+        // Query by cart + product so we reliably merge duplicate adds.
+        CartItem existingItem = cartItemRepository
+                .findByCartIdAndProductId(cart.getId(), product.getId())
+                .orElse(null);
 
         if (existingItem != null) {
             int newQuantity = existingItem.getQuantity() + cartReq.getQuantity();
@@ -84,6 +82,34 @@ public class CartService {
                     .quantity(cartReq.getQuantity())
                     .build());
         }
+    }
+
+    @Transactional
+    public void updateQuantity(Long cartItemId, int quantity) {
+        CartItem item = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart item not found with id: " + cartItemId));
+
+        Long userId = getCurrentUserId();
+        if (!item.getCart().getUserId().equals(userId)) {
+            throw new AccessDeniedException("You don't have permission to update this item");
+        }
+
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
+
+        if (quantity == 0) {
+            cartItemRepository.delete(item);
+            return;
+        }
+
+        ProductResponseDto product = productHelperService.getProductById(item.getProductId()).getData();
+        if (quantity > product.getStock()) {
+            throw new IllegalArgumentException("Exceeds available stock");
+        }
+
+        item.setQuantity(quantity);
+        cartItemRepository.save(item);
     }
 
     @Transactional

@@ -2,8 +2,8 @@ package com.quickcart.service;
 
 import com.quickcart.common.event.DeliveryStatusChangedEvent;
 import com.quickcart.common.exception.ResourceNotFoundException;
-import com.quickcart.entiry.Delivery;
-import com.quickcart.entiry.DeliveryStatus;
+import com.quickcart.entity.Delivery;
+import com.quickcart.entity.DeliveryStatus;
 import com.quickcart.kafka.DeliveryProducer;
 import com.quickcart.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;

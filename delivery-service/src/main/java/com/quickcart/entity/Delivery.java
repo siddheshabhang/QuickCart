@@ -1,4 +1,4 @@
-package com.quickcart.entiry;
+package com.quickcart.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

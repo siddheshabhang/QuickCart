@@ -31,6 +31,15 @@ public class CartController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Removed from cart", null));
     }
 
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<Void>> updateQuantity(
+            @PathVariable("id") Long id,
+            @RequestParam("quantity") int quantity) {
+        cartService.updateQuantity(id, quantity);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Cart item quantity updated", null));
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<CartResponseDto>> getCart() {
@@ -44,4 +53,3 @@ public class CartController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Cart cleared", null));
     }
 }
-

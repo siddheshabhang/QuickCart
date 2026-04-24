@@ -108,6 +108,7 @@ OrderService {
 
         return OrderResponseDto.builder()
                 .orderId(order.getId())
+                .userId(order.getUserId())
                 .totalAmount(order.getTotalAmount())
                 .items(items)
                 .status(order.getStatus())
