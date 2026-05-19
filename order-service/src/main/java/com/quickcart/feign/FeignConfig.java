@@ -22,6 +22,7 @@ public class FeignConfig {
                 if (email != null)  requestTemplate.header("X-User-Email", email);
                 if (role != null)   requestTemplate.header("X-User-Role", role);
                 if (userId != null) requestTemplate.header("X-User-Id", userId);
+                requestTemplate.header("X-Internal-Service", "ORDER-SERVICE");
             }
         };
     }

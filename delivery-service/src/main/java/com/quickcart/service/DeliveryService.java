@@ -2,14 +2,18 @@ package com.quickcart.service;
 
 import com.quickcart.common.event.DeliveryStatusChangedEvent;
 import com.quickcart.common.exception.ResourceNotFoundException;
+import com.quickcart.dto.DeliveryResponseDto;
 import com.quickcart.entity.Delivery;
 import com.quickcart.entity.DeliveryStatus;
 import com.quickcart.kafka.DeliveryProducer;
 import com.quickcart.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -18,6 +22,21 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryProducer deliveryProducer;
     private final OtpService otpService;
+
+    @Transactional(readOnly = true)
+    public List<DeliveryResponseDto> getAllDeliveries() {
+        return deliveryRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public DeliveryResponseDto getDeliveryByOrderId(Long orderId) {
+        Delivery delivery = deliveryRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery not found for orderId: " + orderId));
+        return toDto(delivery);
+    }
 
     @Transactional
     public void createDelivery(Long orderId, Long userId) {
@@ -80,5 +99,15 @@ public class DeliveryService {
                 .userId(delivery.getUserId())
                 .status(DeliveryStatus.DELIVERED.name())
                 .build());
+    }
+
+    private DeliveryResponseDto toDto(Delivery delivery) {
+        return DeliveryResponseDto.builder()
+                .id(delivery.getId())
+                .orderId(delivery.getOrderId())
+                .userId(delivery.getUserId())
+                .status(delivery.getStatus())
+                .createdAt(delivery.getCreatedAt())
+                .build();
     }
 }

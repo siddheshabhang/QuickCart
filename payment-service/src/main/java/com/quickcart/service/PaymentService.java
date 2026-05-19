@@ -11,6 +11,7 @@ import com.quickcart.feign.OrderClient;
 import com.quickcart.kafka.PaymentProducer;
 import com.quickcart.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,10 @@ public class PaymentService {
         Long userId = getCurrentUserId();
 
         OrderResponseDto order = orderHelperService.getOrderById(requestDto.getOrderId()).getData();
+        if (!order.getUserId().equals(userId)) {
+            throw new AccessDeniedException("You can only pay for your own order");
+        }
+
         Optional<Payment> existingPayment = paymentRepository.findByOrderId(requestDto.getOrderId());
 
         if (existingPayment.isPresent() && existingPayment.get().getStatus() == PaymentStatus.SUCCESS) {

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private static final String ORDER_SERVICE = "ORDER-SERVICE";
 
     @PostMapping
     @PreAuthorize("hasRole('STORE')")
@@ -113,8 +115,13 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/deduct-stock")
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
-    public ResponseEntity<ApiResponse<Void>> deductStock(@PathVariable("id") Long id, @RequestParam("quantity") int quantity) {
+    public ResponseEntity<ApiResponse<Void>> deductStock(
+            @PathVariable("id") Long id,
+            @RequestParam("quantity") int quantity,
+            @RequestHeader(value = "X-Internal-Service", required = false) String internalService) {
+        if (!ORDER_SERVICE.equals(internalService)) {
+            throw new AccessDeniedException("Stock can only be deducted by order-service");
+        }
         productService.deductStock(id, quantity);
         return ResponseEntity.ok(new ApiResponse<>(true, "Stock deducted", null));
     }

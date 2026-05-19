@@ -7,6 +7,7 @@ import com.quickcart.entity.OrderStatus;
 import com.quickcart.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("/order")
 public class OrderController {
     private final OrderService orderService;
+    private static final String PAYMENT_SERVICE = "PAYMENT-SERVICE";
 
     @PostMapping("/place")
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -35,6 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<OrderResponseDto>> getOrderById(@PathVariable("id") Long orderId) {
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Order fetched", orderService.getOrderById(orderId))
@@ -42,7 +45,13 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<Void>> updateOrderStatus(@PathVariable("id") Long orderId, @RequestParam("status") OrderStatus status) {
+    public ResponseEntity<ApiResponse<Void>> updateOrderStatus(
+            @PathVariable("id") Long orderId,
+            @RequestParam("status") OrderStatus status,
+            @RequestHeader(value = "X-Internal-Service", required = false) String internalService) {
+        if (!PAYMENT_SERVICE.equals(internalService)) {
+            throw new AccessDeniedException("Order status can only be updated by payment-service");
+        }
         orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok(new ApiResponse<>(true, "Order status updated", null));
     }

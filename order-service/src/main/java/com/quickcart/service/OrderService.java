@@ -12,6 +12,7 @@ import com.quickcart.feign.ProductClient;
 import com.quickcart.kafka.OrderProducer;
 import com.quickcart.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +119,7 @@ OrderService {
     public OrderResponseDto getOrderById(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        assertOrderBelongsToCurrentUser(order);
         return toDto(order);
     }
 
@@ -125,8 +127,15 @@ OrderService {
     public void updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        assertOrderBelongsToCurrentUser(order);
         order.setStatus(status);
         orderRepository.save(order);
     }
 
+    private void assertOrderBelongsToCurrentUser(Order order) {
+        Long userId = getCurrentUserId();
+        if (!order.getUserId().equals(userId)) {
+            throw new AccessDeniedException("You can only access your own order");
+        }
+    }
 }

@@ -48,6 +48,7 @@ public class CartController {
     }
 
     @DeleteMapping("/clear")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<Void>> clearCart() {
         cartService.clearCart();
         return ResponseEntity.ok(new ApiResponse<>(true, "Cart cleared", null));
