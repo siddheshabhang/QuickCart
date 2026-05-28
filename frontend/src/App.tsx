@@ -5,9 +5,8 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import PaymentPage from "./pages/PaymentPage";
 import OrdersPage from "./pages/OrdersPage";
-
-function StorePage() { return <div>Store Dashboard - Coming Soon</div>; }
-function DeliveryPage() { return <div>Delivery Dashboard - Coming Soon</div>; }
+import StorePage from "./pages/StorePage";
+import DeliveryPage from "./pages/DeliveryPage";
 
 function App() {
   return (
