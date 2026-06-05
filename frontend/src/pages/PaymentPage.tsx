@@ -11,6 +11,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { processPayment } from "../api/endpoints";
 import Navbar from "../components/Navbar";
 
+function createIdempotencyKey() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 export default function PaymentPage() {
   // useParams reads the :orderId from the URL
   const { orderId } = useParams<{ orderId: string }>();
@@ -18,13 +25,14 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<"success" | "failed" | null>(null);
   const [error, setError] = useState("");
+  const [idempotencyKey, setIdempotencyKey] = useState(createIdempotencyKey);
 
   async function handlePayment(simulateSuccess: boolean) {
     if (!orderId) return;
     setLoading(true);
     setError("");
     try {
-      const res = await processPayment(Number(orderId), simulateSuccess);
+      const res = await processPayment(Number(orderId), simulateSuccess, idempotencyKey);
       setResult(res.data.status === "SUCCESS" ? "success" : "failed");
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
@@ -77,7 +85,13 @@ export default function PaymentPage() {
           <div style={styles.failBox}>
             <h3>Payment Failed</h3>
             <p>Your order was not confirmed. You can retry the payment.</p>
-            <button style={styles.button} onClick={() => setResult(null)}>
+            <button
+              style={styles.button}
+              onClick={() => {
+                setIdempotencyKey(createIdempotencyKey());
+                setResult(null);
+              }}
+            >
               Retry Payment
             </button>
           </div>

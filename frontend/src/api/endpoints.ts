@@ -120,8 +120,17 @@ export const getOrders = () =>
 
 // ─── Payment ──────────────────────────────────────────────────────────────────
 
-export const processPayment = (orderId: number, simulateSuccess: boolean) =>
-  apiClient<Payment>("POST", "/payment/process", { orderId, simulateSuccess });
+export const processPayment = (
+  orderId: number,
+  simulateSuccess: boolean,
+  idempotencyKey?: string
+) =>
+  apiClient<Payment>(
+    "POST",
+    "/payment/process",
+    { orderId, simulateSuccess },
+    idempotencyKey ? { "X-Idempotency-Key": idempotencyKey } : {}
+  );
 
 // ─── Delivery ─────────────────────────────────────────────────────────────────
 

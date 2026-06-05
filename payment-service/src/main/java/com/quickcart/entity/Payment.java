@@ -27,6 +27,9 @@ public class Payment {
 
     private LocalDateTime createdAt;
 
+    @Column(unique = true)
+    private String idempotencyKey;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

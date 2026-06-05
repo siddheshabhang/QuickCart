@@ -19,7 +19,8 @@ export interface ApiResponse<T> {
 export async function apiClient<T>(
   method: string,
   path: string,
-  body?: unknown
+  body?: unknown,
+  headers: Record<string, string> = {}
 ): Promise<ApiResponse<T>> {
   // Grab the JWT token from localStorage (we'll store it there during login)
   const token = localStorage.getItem("token");
@@ -31,6 +32,7 @@ export async function apiClient<T>(
       // If a token exists, attach it as a Bearer token on every request
       // Your API Gateway's JwtAuthenticationFilter reads this header
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...headers,
     },
     // Only attach a body for POST/PUT requests
     body: body ? JSON.stringify(body) : undefined,

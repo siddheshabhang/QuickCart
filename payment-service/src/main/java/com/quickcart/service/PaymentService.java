@@ -7,7 +7,6 @@ import com.quickcart.dto.PaymentRequestDto;
 import com.quickcart.dto.PaymentResponseDto;
 import com.quickcart.entity.Payment;
 import com.quickcart.entity.PaymentStatus;
-import com.quickcart.feign.OrderClient;
 import com.quickcart.kafka.PaymentProducer;
 import com.quickcart.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,17 @@ public class PaymentService {
     }
 
     public PaymentResponseDto processPayment(PaymentRequestDto requestDto) {
+        return processPayment(requestDto, null);
+    }
+
+    public PaymentResponseDto processPayment(PaymentRequestDto requestDto, String idempotencyKey) {
         Long userId = getCurrentUserId();
+        String normalizedIdempotencyKey = normalizeIdempotencyKey(idempotencyKey);
+
+        if (normalizedIdempotencyKey != null) {
+            Optional<Payment> existing = paymentRepository.findByIdempotencyKey(normalizedIdempotencyKey);
+            if (existing.isPresent()) return toDto(existing.get());
+        }
 
         OrderResponseDto order = orderHelperService.getOrderById(requestDto.getOrderId()).getData();
         if (!order.getUserId().equals(userId)) {
@@ -52,6 +61,7 @@ public class PaymentService {
                         .amount(order.getTotalAmount())
                         .status(PaymentStatus.PENDING)
                         .transactionId(UUID.randomUUID().toString())
+                        .idempotencyKey(normalizedIdempotencyKey)
                         .build()
         ));
 
@@ -82,5 +92,12 @@ public class PaymentService {
                 .status(payment.getStatus().name())
                 .transactionId(payment.getTransactionId())
                 .build();
+    }
+
+    private String normalizeIdempotencyKey(String idempotencyKey) {
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            return null;
+        }
+        return idempotencyKey.trim();
     }
 }

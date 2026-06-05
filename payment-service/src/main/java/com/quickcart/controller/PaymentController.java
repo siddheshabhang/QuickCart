@@ -1,6 +1,5 @@
 package com.quickcart.controller;
 
-
 import com.quickcart.common.dto.ApiResponse;
 import com.quickcart.dto.PaymentRequestDto;
 import com.quickcart.dto.PaymentResponseDto;
@@ -18,9 +17,11 @@ public class PaymentController {
 
     @PostMapping("/process")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<ApiResponse<PaymentResponseDto>> processPayment(@RequestBody PaymentRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<PaymentResponseDto>> processPayment(
+            @RequestBody PaymentRequestDto requestDto,
+            @RequestHeader(value = "X-Idempotency-Key", required = false) String idempotencyKey) {
         return ResponseEntity.ok(
-                new ApiResponse<>(true, "Payment processed", paymentService.processPayment(requestDto))
-        );
+                new ApiResponse<>(true, "Payment processed",
+                        paymentService.processPayment(requestDto, idempotencyKey)));
     }
 }

@@ -28,7 +28,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         // All actual role enforcement is done via @PreAuthorize at method level.
                         // The Gateway already verified the JWT before forwarding here.
-                        auth.anyRequest().permitAll()
+                        auth.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                                .anyRequest().permitAll()
                 )
                 .addFilterBefore(gatewayAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

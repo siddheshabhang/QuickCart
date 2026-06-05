@@ -81,12 +81,24 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
         <!-- Common library -->
         <dependency>
             <groupId>com.quickcart</groupId>
             <artifactId>common-lib</artifactId>
             <version>1.0.0</version>
         </dependency>
+
     </dependencies>
 
 </project>
