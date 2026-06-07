@@ -1,13 +1,16 @@
 // One typed function per backend endpoint.
 // Pages import these — never call fetch directly.
 
-import { apiClient } from "./client";
+import { apiClient, API_BASE_URL } from "./client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 // These mirror your Java DTOs exactly.
 
 export interface AuthResponse {
   token: string;
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
 }
 
 export interface Product {
@@ -71,6 +74,12 @@ export const login = (email: string, password: string) =>
 
 export const register = (name: string, email: string, password: string) =>
   apiClient<AuthResponse>("POST", "/auth/register", { name, email, password });
+
+export const refreshToken = (refreshToken: string) =>
+  apiClient<AuthResponse>("POST", "/auth/refresh", { refreshToken });
+
+export const getGoogleLoginUrl = () =>
+  `${API_BASE_URL}/auth/oauth2/authorization/google`;
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 

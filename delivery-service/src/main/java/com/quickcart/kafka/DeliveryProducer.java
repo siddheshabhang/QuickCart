@@ -19,7 +19,7 @@ public class DeliveryProducer {
     public void publishDeliveryStatus(DeliveryStatusChangedEvent event) {
         try {
             String msg = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send(TOPIC, msg);
+            kafkaTemplate.send(TOPIC, String.valueOf(event.getOrderId()), msg);
             log.info("Delivery event published → orderId: {}, status: {}",
                     event.getOrderId(), event.getStatus());
         } catch (Exception e) {

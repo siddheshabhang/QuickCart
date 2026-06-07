@@ -17,6 +17,7 @@ spring:
               - Authorization
               - Content-Type
               - X-Idempotency-Key
+              - X-Admin-Setup-Key
             allowCredentials: false
       routes:
         - id: auth-service
@@ -52,3 +53,4 @@ eureka:
 jwt:
   secret: qC_siddhesh_9fA7xL2pQw8ZrT6mN4vYkH1uB3eD5Jc
   expiration: 86400000
+  access-expiration: 900000

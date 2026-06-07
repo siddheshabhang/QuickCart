@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
         String token = authHeader.substring(7);
 
-        if (!jwtService.isTokenValid(token)) {
+        if (!jwtService.isAccessTokenValid(token)) {
             return unauthorized(exchange);
         }
 

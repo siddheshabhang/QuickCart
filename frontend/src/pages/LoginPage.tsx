@@ -5,11 +5,11 @@
 // - async/await: waits for the API call to finish before moving on
 // - useNavigate: redirects to a different page after login
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { login, register } from "../api/endpoints";
-import { saveToken } from "../auth/token";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { getGoogleLoginUrl, login, register } from "../api/endpoints";
+import { saveTokens } from "../auth/token";
 import { getCurrentUser } from "../auth/useAuth";
 
 export default function LoginPage() {
@@ -20,6 +20,15 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const oauthError = searchParams.get("oauthError");
+    if (oauthError) {
+      setError(oauthError);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,7 +40,7 @@ export default function LoginPage() {
         ? await login(email, password)
         : await register(name, email, password);
 
-      saveToken(res.data.token);
+      saveTokens(res.data.accessToken || res.data.token, res.data.refreshToken);
 
       const user = getCurrentUser();
 
@@ -89,6 +98,18 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {isLogin && (
+          <button
+            style={styles.googleButton}
+            type="button"
+            onClick={() => {
+              window.location.href = getGoogleLoginUrl();
+            }}
+          >
+            Continue with Google
+          </button>
+        )}
+
         <p style={styles.toggle}>
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <span
@@ -102,12 +123,6 @@ export default function LoginPage() {
           </span>
         </p>
 
-        <div style={styles.demoBox}>
-          <p style={styles.demoTitle}>Demo Users</p>
-          <p>customer@quickcart.dev / Customer@123</p>
-          <p>store@quickcart.dev / Store@123</p>
-          <p>delivery@quickcart.dev / Delivery@123</p>
-        </div>
       </div>
     </div>
   );
@@ -159,6 +174,17 @@ const styles: Record<string, CSSProperties> = {
     fontSize: "1rem",
     cursor: "pointer",
   },
+  googleButton: {
+    width: "100%",
+    marginTop: "0.75rem",
+    padding: "0.75rem",
+    backgroundColor: "white",
+    color: "#333",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "1rem",
+    cursor: "pointer",
+  },
   error: {
     color: "red",
     textAlign: "center",
@@ -172,19 +198,5 @@ const styles: Record<string, CSSProperties> = {
     color: "#e44d26",
     cursor: "pointer",
     fontWeight: "bold",
-  },
-  demoBox: {
-    marginTop: "1.5rem",
-    padding: "0.75rem",
-    backgroundColor: "#f9f9f9",
-    borderRadius: "4px",
-    fontSize: "0.8rem",
-    color: "#666",
-    lineHeight: "1.6",
-  },
-  demoTitle: {
-    fontWeight: "bold",
-    marginBottom: "0.25rem",
-    color: "#333",
   },
 };

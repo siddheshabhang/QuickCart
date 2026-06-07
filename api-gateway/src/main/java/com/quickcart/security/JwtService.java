@@ -12,6 +12,7 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+    private static final String ACCESS_TOKEN_TYPE = "ACCESS";
 
     @Value("${jwt.secret}")
     private String secret;
@@ -28,6 +29,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
+                .claim("type", ACCESS_TOKEN_TYPE)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignKey())
@@ -40,6 +42,10 @@ public class JwtService {
 
     public String extractRole(String token) {
         return extractClaims(token).get("role", String.class);
+    }
+
+    public String extractTokenType(String token) {
+        return extractClaims(token).get("type", String.class);
     }
 
     public Long extractUserId(String token) {
@@ -58,6 +64,14 @@ public class JwtService {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public boolean isAccessTokenValid(String token) {
+        if (!isTokenValid(token)) {
+            return false;
+        }
+        String tokenType = extractTokenType(token);
+        return tokenType == null || ACCESS_TOKEN_TYPE.equals(tokenType);
     }
 
     private Claims extractClaims(String token) {

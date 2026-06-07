@@ -7,6 +7,7 @@ import PaymentPage from "./pages/PaymentPage";
 import OrdersPage from "./pages/OrdersPage";
 import StorePage from "./pages/StorePage";
 import DeliveryPage from "./pages/DeliveryPage";
+import OAuthRedirectPage from "./pages/OAuthRedirectPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/oauth2/redirect" element={<OAuthRedirectPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />

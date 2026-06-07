@@ -2,6 +2,7 @@ package com.quickcart.service;
 
 
 import com.quickcart.common.event.OrderCreatedEvent;
+import com.quickcart.common.event.DeliveryStatusChangedEvent;
 import com.quickcart.common.exception.ResourceNotFoundException;
 import com.quickcart.dto.*;
 import com.quickcart.entity.Order;
@@ -12,18 +13,35 @@ import com.quickcart.feign.ProductClient;
 import com.quickcart.kafka.OrderProducer;
 import com.quickcart.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class
-OrderService {
+public class OrderService {
+    private static final Map<OrderStatus, Integer> STATUS_PROGRESS = new EnumMap<>(OrderStatus.class);
+
+    static {
+        STATUS_PROGRESS.put(OrderStatus.CREATED, 0);
+        STATUS_PROGRESS.put(OrderStatus.PAYMENT_PENDING, 1);
+        STATUS_PROGRESS.put(OrderStatus.CONFIRMED, 2);
+        STATUS_PROGRESS.put(OrderStatus.ASSIGNED, 3);
+        STATUS_PROGRESS.put(OrderStatus.OUT_FOR_DELIVERY, 4);
+        STATUS_PROGRESS.put(OrderStatus.DELIVERED, 5);
+        STATUS_PROGRESS.put(OrderStatus.FAILED, 5);
+        STATUS_PROGRESS.put(OrderStatus.CANCELLED, 5);
+    }
+
     private final OrderRepository orderRepository;
     private final CartHelperService cartHelperService;
     private final ProductHelperService productHelperService;
@@ -130,6 +148,59 @@ OrderService {
         assertOrderBelongsToCurrentUser(order);
         order.setStatus(status);
         orderRepository.save(order);
+    }
+
+    @Transactional
+    public void syncStatusFromDelivery(DeliveryStatusChangedEvent event) {
+        Long orderId = event.getOrderId();
+        OrderStatus newStatus = mapDeliveryStatus(event.getStatus())
+                .orElse(null);
+
+        if (newStatus == null) {
+            log.warn("Ignoring delivery event with unmapped status: {} for orderId: {}",
+                    event.getStatus(), orderId);
+            return;
+        }
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+
+        if (shouldIgnoreDeliveryTransition(order.getStatus(), newStatus)) {
+            log.warn("Ignoring stale delivery status sync for orderId: {} currentStatus: {} newStatus: {}",
+                    orderId, order.getStatus(), newStatus);
+            return;
+        }
+
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+        log.info("Order status synced from delivery event → orderId: {}, status: {}", orderId, newStatus);
+    }
+
+    private Optional<OrderStatus> mapDeliveryStatus(String deliveryStatus) {
+        if (deliveryStatus == null) {
+            return Optional.empty();
+        }
+
+        return switch (deliveryStatus) {
+            case "ASSIGNED" -> Optional.of(OrderStatus.ASSIGNED);
+            case "OUT_FOR_DELIVERY" -> Optional.of(OrderStatus.OUT_FOR_DELIVERY);
+            case "DELIVERED" -> Optional.of(OrderStatus.DELIVERED);
+            case "FAILED" -> Optional.of(OrderStatus.FAILED);
+            default -> Optional.empty();
+        };
+    }
+
+    private boolean shouldIgnoreDeliveryTransition(OrderStatus currentStatus, OrderStatus newStatus) {
+        if (currentStatus == newStatus) {
+            return true;
+        }
+        if (currentStatus == OrderStatus.DELIVERED
+                || currentStatus == OrderStatus.FAILED
+                || currentStatus == OrderStatus.CANCELLED) {
+            return true;
+        }
+
+        return STATUS_PROGRESS.getOrDefault(newStatus, 0) < STATUS_PROGRESS.getOrDefault(currentStatus, 0);
     }
 
     private void assertOrderBelongsToCurrentUser(Order order) {
