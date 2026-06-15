@@ -28,6 +28,7 @@
         <spring.boot.version>3.2.5</spring.boot.version>
         <spring.cloud.version>2023.0.1</spring.cloud.version>
         <springdoc.version>2.3.0</springdoc.version>
+        <spring.dotenv.version>4.0.0</spring.dotenv.version>
     </properties>
 
     <dependencyManagement>
@@ -48,8 +49,23 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- spring-dotenv: loads .env file into Spring Environment -->
+            <dependency>
+                <groupId>me.paulschwarz</groupId>
+                <artifactId>spring-dotenv</artifactId>
+                <version>${spring.dotenv.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <!-- Inherited by ALL child modules — resolves ${VAR} placeholders from .env -->
+    <dependencies>
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

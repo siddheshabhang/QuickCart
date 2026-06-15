@@ -28,7 +28,7 @@ import java.util.List;
  * this filter before UsernamePasswordAuthenticationFilter.
  */
 @Component
-public class GatewayAuthFilter extends OncePerRequestFilter {
+public class  GatewayAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -46,8 +46,9 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
 
             // Spring Security expects "ROLE_" prefix for hasRole() / hasAnyRole()
             var authority = new SimpleGrantedAuthority("ROLE_" + role);
-            // Use userId as principal so services can parse it directly as Long
-            var auth      = new UsernamePasswordAuthenticationToken(userId, null, List.of(authority));
+            // principal = userId (parsed as Long by services via getName())
+            // credentials = email (retrieved via getCredentials() — no Feign call needed)
+            var auth      = new UsernamePasswordAuthenticationToken(userId, email, List.of(authority));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 

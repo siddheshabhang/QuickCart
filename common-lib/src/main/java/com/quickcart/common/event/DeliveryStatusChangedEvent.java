@@ -13,4 +13,5 @@ public class DeliveryStatusChangedEvent {
     private Long orderId;
     private Long userId;
     private String status;
+    private String userEmail;
 }

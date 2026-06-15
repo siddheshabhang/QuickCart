@@ -27,7 +27,8 @@ public class Delivery {
     @Column(nullable = false)
     private DeliveryStatus status;
 
-    private String otp;
+    /** Customer email — stored at creation time from PaymentCompletedEvent payload. */
+    private String userEmail;
 
     private LocalDateTime createdAt;
 

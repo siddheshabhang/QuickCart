@@ -13,4 +13,5 @@ public class OrderCreatedEvent {
     private Long orderId;
     private Long userId;
     private Double totalAmount;
+    private String userEmail;
 }

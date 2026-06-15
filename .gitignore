@@ -37,3 +37,6 @@ docs/
 logs/
 startback.sh
 start-backend.sh
+
+### Secrets — never commit these ###
+.env

@@ -20,7 +20,7 @@ public class PaymentEventConsumer {
         try {
             PaymentCompletedEvent event = objectMapper.readValue(message, PaymentCompletedEvent.class);
             if (event.getStatus().equals("SUCCESS")) {
-                deliveryService.createDelivery(event.getOrderId(), event.getUserId());
+                deliveryService.createDelivery(event.getOrderId(), event.getUserId(), event.getUserEmail());
                 log.info("Delivery created for orderId: {}", event.getOrderId());
             }
         } catch (Exception e) {

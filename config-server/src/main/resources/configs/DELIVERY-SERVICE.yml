@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/delivery_db
-    username: postgres
-    password: password
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,6 +18,22 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    from: noreply@quickcart.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 eureka:
   client:

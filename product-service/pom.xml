@@ -73,6 +73,13 @@
             <artifactId>common-lib</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!-- Kafka — needed for PaymentEventConsumer -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

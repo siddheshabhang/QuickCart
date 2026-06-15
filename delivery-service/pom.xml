@@ -70,5 +70,17 @@
             <artifactId>common-lib</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!-- Spring Mail — needed for OTP email delivery -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- Redis — OTP storage with native TTL, replaces DB otp column -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
     </dependencies>
 </project>

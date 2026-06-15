@@ -14,4 +14,5 @@ public class PaymentCompletedEvent {
     private Long userId;
     private String status;
     private Double amount;
+    private String userEmail;
 }

@@ -6,3 +6,17 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  mail:
+    # Mailtrap sandbox — use for local dev (emails go to inbox, not real recipients)
+    # Swap host/port/credentials with smtp.gmail.com / 587 for production
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: ${MAIL_USERNAME}   # set in environment or .env file
+    password: ${MAIL_PASSWORD}   # set in environment or .env file
+    from: noreply@quickcart.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

@@ -54,6 +54,17 @@ public class OrderService {
         return Long.parseLong(principal);
     }
 
+    /**
+     * Reads the authenticated user's email from the SecurityContext.
+     * GatewayAuthFilter stores the X-User-Email header as the credentials
+     * of the UsernamePasswordAuthenticationToken, so no Feign call is needed.
+     */
+    private String getCurrentUserEmail() {
+        return (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
+    }
+
     @Transactional
     public OrderResponseDto placeOrder(OrderRequestDto requestDto) {
         Long userId = getCurrentUserId();
@@ -101,6 +112,7 @@ public class OrderService {
                 .orderId(savedOrder.getId())
                 .userId(userId)
                 .totalAmount(savedOrder.getTotalAmount())
+                .userEmail(getCurrentUserEmail())   // carried from JWT via SecurityContext
                 .build());
 
         return toDto(savedOrder);

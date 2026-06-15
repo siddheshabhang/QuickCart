@@ -1,12 +1,19 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/product_db
-    username: postgres
-    password: password
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: product-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 eureka:
   client:

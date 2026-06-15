@@ -31,6 +31,16 @@ public class PaymentService {
         return Long.parseLong(principal);
     }
 
+    /**
+     * Reads the authenticated user's email from the SecurityContext credentials.
+     * Stored there by GatewayAuthFilter — no Feign call needed.
+     */
+    private String getCurrentUserEmail() {
+        return (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
+    }
+
     public PaymentResponseDto processPayment(PaymentRequestDto requestDto) {
         return processPayment(requestDto, null);
     }
@@ -80,6 +90,7 @@ public class PaymentService {
                 .userId(order.getUserId())
                 .status(payment.getStatus().name())
                 .amount(payment.getAmount())
+                .userEmail(getCurrentUserEmail())   // carried from JWT via SecurityContext
                 .build());
         return toDto(payment);
     }
