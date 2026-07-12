@@ -89,6 +89,19 @@ export default function DeliveryPage() {
     }
   }
 
+  async function handleResendOtp(orderId: number) {
+    try {
+      // Need to import resendOtp from endpoints
+      const { resendOtp } = await import("../api/endpoints");
+      await resendOtp(orderId);
+      setFeedback((prev) => ({ ...prev, [orderId]: "OTP resent successfully!" }));
+      setOtpErrors((prev) => ({ ...prev, [orderId]: "" }));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to resend OTP";
+      setOtpErrors((prev) => ({ ...prev, [orderId]: msg }));
+    }
+  }
+
   if (loading) return <div><Navbar /><p style={{ padding: "1.5rem" }}>Loading deliveries...</p></div>;
   if (error) return <div><Navbar /><p style={{ padding: "1.5rem", color: "red" }}>{error}</p></div>;
 
@@ -174,6 +187,12 @@ export default function DeliveryPage() {
                     onClick={() => handleVerifyOtp(delivery.orderId)}
                   >
                     Verify OTP
+                  </button>
+                  <button
+                    style={styles.resendBtn}
+                    onClick={() => handleResendOtp(delivery.orderId)}
+                  >
+                    Resend OTP
                   </button>
                 </div>
                 {otpErrors[delivery.orderId] && (
@@ -276,6 +295,15 @@ const styles: Record<string, CSSProperties> = {
   otpBtn: {
     padding: "0.5rem 1rem",
     backgroundColor: "#28a745",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "0.9rem",
+  },
+  resendBtn: {
+    padding: "0.5rem 1rem",
+    backgroundColor: "#6c757d",
     color: "white",
     border: "none",
     borderRadius: "4px",

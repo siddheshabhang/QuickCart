@@ -19,8 +19,10 @@ public class CartController {
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<ApiResponse<Void>> addToCart(@Valid @RequestBody AddToCartReq cartReq) {
-        cartService.addToCart(cartReq);
+    public ResponseEntity<ApiResponse<Void>> addToCart(
+            @Valid @RequestBody AddToCartReq cartReq,
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
+        cartService.addToCart(cartReq, storeId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Added to cart", null));
     }
 
@@ -35,16 +37,18 @@ public class CartController {
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<Void>> updateQuantity(
             @PathVariable("id") Long id,
-            @RequestParam("quantity") int quantity) {
-        cartService.updateQuantity(id, quantity);
+            @RequestParam("quantity") int quantity,
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
+        cartService.updateQuantity(id, quantity, storeId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Cart item quantity updated", null));
     }
 
     @GetMapping
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<ApiResponse<CartResponseDto>> getCart() {
+    public ResponseEntity<ApiResponse<CartResponseDto>> getCart(
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
         return ResponseEntity.ok(
-                new ApiResponse<>(true, "Cart fetched", cartService.getCart()));
+                new ApiResponse<>(true, "Cart fetched", cartService.getCart(storeId)));
     }
 
     @DeleteMapping("/clear")

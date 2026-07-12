@@ -20,6 +20,10 @@ public class Order {
 
     private Long userId;
 
+    /** The dark store that fulfilled this order. */
+    @Column(nullable = false)
+    private Long storeId;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 

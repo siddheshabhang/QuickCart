@@ -2,7 +2,6 @@ package com.quickcart.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quickcart.common.event.DeliveryStatusChangedEvent;
-import com.quickcart.common.event.OrderCreatedEvent;
 import com.quickcart.common.event.PaymentCompletedEvent;
 import com.quickcart.service.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 /**
- * Kafka consumer that reacts to order, payment, and delivery events
+ * Kafka consumer that reacts to payment and delivery events
  * by sending real transactional emails to the customer.
  *
  * <p>Each listener method:
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Component;
  * </ol>
  *
  * <p>The {@code userEmail} field on each event is populated by the originating
- * service (order-service, payment-service, delivery-service) by reading
+ * service (payment-service, delivery-service) by reading
  * {@code SecurityContextHolder.getContext().getAuthentication().getCredentials()},
  * which holds the value of the {@code X-User-Email} header forwarded by the
  * API Gateway after JWT validation.
@@ -35,17 +34,6 @@ public class NotificationConsumer {
 
     private final ObjectMapper objectMapper;
     private final EmailService emailService;
-
-    @KafkaListener(topics = "order-events", groupId = "notification-group")
-    public void consumeOrderEvent(String message) {
-        try {
-            OrderCreatedEvent event = objectMapper.readValue(message, OrderCreatedEvent.class);
-            log.info("Order event received → orderId: {}, email: {}", event.getOrderId(), event.getUserEmail());
-            emailService.sendOrderConfirmation(event.getUserEmail(), event.getOrderId(), event.getTotalAmount());
-        } catch (Exception e) {
-            log.error("Failed to process order event: {}", e.getMessage(), e);
-        }
-    }
 
     @KafkaListener(topics = "payment-events", groupId = "notification-group")
     public void consumePaymentEvent(String message) {

@@ -5,6 +5,13 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a product in the QuickCart catalogue.
+ *
+ * Stock is NOT stored here — it lives in {@link Inventory} as a
+ * per-dark-store quantity. Use {@link com.quickcart.repository.InventoryRepository}
+ * to query available stock for a specific store.
+ */
 @Entity
 @Getter
 @Setter
@@ -21,10 +28,8 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Integer stock;
-
     private String description;
+    private String imageUrl;
 
     @PrePersist
     public void prePersist() {
@@ -35,16 +40,5 @@ public class Product {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public boolean isAvailable() {
-        return this.stock > 0;
-    }
-
-    public void deductStock(int quantity) {
-        if (quantity > this.stock) {
-            throw new IllegalArgumentException("Insufficient stock for: " + this.name);
-        }
-        this.stock -= quantity;
     }
 }

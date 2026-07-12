@@ -39,11 +39,11 @@ public class CartService {
     }
 
     @Transactional
-    public void addToCart(AddToCartReq cartReq) {
+    public void addToCart(AddToCartReq cartReq, Long storeId) {
         Long userId = getCurrentUserId();
 
         // Validate product via Feign — product-service is the source of truth
-        ProductResponseDto product = productHelperService.getProductById(cartReq.getProductId()).getData();
+        ProductResponseDto product = productHelperService.getProductById(cartReq.getProductId(), storeId).getData();
 
         if (cartReq.getQuantity() <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
@@ -85,7 +85,7 @@ public class CartService {
     }
 
     @Transactional
-    public void updateQuantity(Long cartItemId, int quantity) {
+    public void updateQuantity(Long cartItemId, int quantity, Long storeId) {
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item not found with id: " + cartItemId));
 
@@ -103,7 +103,7 @@ public class CartService {
             return;
         }
 
-        ProductResponseDto product = productHelperService.getProductById(item.getProductId()).getData();
+        ProductResponseDto product = productHelperService.getProductById(item.getProductId(), storeId).getData();
         if (quantity > product.getStock()) {
             throw new IllegalArgumentException("Exceeds available stock");
         }
@@ -126,7 +126,7 @@ public class CartService {
     }
 
     @Transactional(readOnly = true)
-    public CartResponseDto getCart() {
+    public CartResponseDto getCart(Long storeId) {
         Long userId = getCurrentUserId();
 
         // If user has never added to cart, return empty cart instead of 500
@@ -145,7 +145,7 @@ public class CartService {
 
         for (CartItem item : cartItems) {
             // Enrich each cart item with live product data from product-service
-            ProductResponseDto product = productHelperService.getProductById(item.getProductId()).getData();
+            ProductResponseDto product = productHelperService.getProductById(item.getProductId(), storeId).getData();
             double itemTotal = product.getPrice() * item.getQuantity();
             total += itemTotal;
 

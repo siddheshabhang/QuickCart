@@ -1,7 +1,7 @@
 // This is the single fetch wrapper for the entire app.
 // Every API call goes through this function.
 
-import { getRefreshToken, getToken, removeTokens, saveTokens } from "../auth/token";
+import { getRefreshToken, getToken, removeTokens, saveTokens, getStoreId } from "../auth/token";
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
@@ -78,6 +78,7 @@ export async function apiClient<T>(
       // If a token exists, attach it as a Bearer token on every request
       // Your API Gateway's JwtAuthenticationFilter reads this header
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(getStoreId() ? { "X-Store-Id": String(getStoreId()) } : {}),
       ...headers,
     },
     // Only attach a body for POST/PUT requests

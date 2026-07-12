@@ -6,15 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface StockReservationRepository extends JpaRepository<StockReservation, Long> {
 
     /**
-     * Used by the Kafka consumer to look up a reservation when a
-     * payment event arrives for a given order.
+     * Used to look up all reservations created for an order. A single
+     * multi-item order creates one reservation row per product.
      */
-    Optional<StockReservation> findByOrderId(Long orderId);
+    List<StockReservation> findAllByOrderId(Long orderId);
 
     /**
      * Used by the scheduler to find all RESERVED records whose deadline

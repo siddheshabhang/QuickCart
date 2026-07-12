@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +20,6 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private static final String ORDER_SERVICE = "ORDER-SERVICE";
 
     @PostMapping
     @PreAuthorize("hasRole('STORE')")
@@ -35,23 +33,32 @@ public class ProductController {
         ), HttpStatus.CREATED);
     }
 
+    /**
+     * Returns products available at the customer's dark store.
+     * Reads {@code X-Store-Id} header forwarded by the API Gateway.
+     * If absent (admin/internal call), returns the full catalogue without stock filtering.
+     */
     @GetMapping
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
-    public ResponseEntity<ApiResponse<List<ProductResponseDto>>> getAllProducts() {
+    public ResponseEntity<ApiResponse<List<ProductResponseDto>>> getAllProducts(
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
+        System.out.println("====== STORE ID RECEIVED: " + storeId + " ======");
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "All products fetched successfully!",
-                productService.getAllProducts()
+                productService.getAllProducts(storeId)
         ));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STORE')")
-    public ResponseEntity<ApiResponse<ProductResponseDto>> getProductById(@PathVariable("id") Long id) {
+    public ResponseEntity<ApiResponse<ProductResponseDto>> getProductById(
+            @PathVariable("id") Long id,
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "Product fetched successfully!",
-                productService.getProductById(id)
+                productService.getProductById(id, storeId)
         ));
     }
 
@@ -93,11 +100,12 @@ public class ProductController {
     public ResponseEntity<ApiResponse<List<ProductResponseDto>>> searchProducts(
             @RequestParam(name = "name") String name,
             @RequestParam(name = "minPrice") double minPrice,
-            @RequestParam(name = "maxPrice") double maxPrice) {
+            @RequestParam(name = "maxPrice") double maxPrice,
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "Filtered products fetched",
-                productService.searchProducts(name, minPrice, maxPrice)
+                productService.searchProducts(name, minPrice, maxPrice, storeId)
         ));
     }
 
@@ -106,23 +114,12 @@ public class ProductController {
     public ResponseEntity<ApiResponse<List<ProductResponseDto>>> filterProducts(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "minPrice", required = false) Double minPrice,
-            @RequestParam(name = "maxPrice", required = false) Double maxPrice) {
+            @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
         return ResponseEntity.ok(new ApiResponse<>(
                 true,
                 "Filtered products fetched",
-                productService.filterProducts(name, minPrice, maxPrice)
+                productService.filterProducts(name, minPrice, maxPrice, storeId)
         ));
-    }
-
-    @PutMapping("/{id}/deduct-stock")
-    public ResponseEntity<ApiResponse<Void>> deductStock(
-            @PathVariable("id") Long id,
-            @RequestParam("quantity") int quantity,
-            @RequestHeader(value = "X-Internal-Service", required = false) String internalService) {
-        if (!ORDER_SERVICE.equals(internalService)) {
-            throw new AccessDeniedException("Stock can only be deducted by order-service");
-        }
-        productService.deductStock(id, quantity);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Stock deducted", null));
     }
 }

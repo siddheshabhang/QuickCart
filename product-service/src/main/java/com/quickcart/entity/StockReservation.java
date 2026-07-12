@@ -35,6 +35,10 @@ public class StockReservation {
     @Column(nullable = false)
     private Long orderId;
 
+    /** The dark store from which this product is being reserved. */
+    @Column(nullable = false)
+    private Long storeId;
+
     /** How many units are being held. */
     @Column(nullable = false)
     private Integer quantity;

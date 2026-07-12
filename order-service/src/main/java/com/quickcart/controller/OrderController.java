@@ -23,7 +23,11 @@ public class OrderController {
     @PostMapping("/place")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<OrderResponseDto>> placeOrder(
-            @RequestBody OrderRequestDto requestDto) {
+            @RequestBody OrderRequestDto requestDto,
+            @RequestHeader(value = "X-Store-Id", required = false) Long storeId) {
+        if (storeId != null) {
+            requestDto.setStoreId(storeId);
+        }
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Order placed", orderService.placeOrder(requestDto)));
     }

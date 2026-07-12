@@ -15,4 +15,6 @@ public class PaymentCompletedEvent {
     private String status;
     private Double amount;
     private String userEmail;
+    /** The dark store that fulfilled this order — needed for SAGA stock compensation. */
+    private Long storeId;
 }

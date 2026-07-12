@@ -1,16 +1,13 @@
 package com.quickcart.service;
 
-
 import com.quickcart.common.event.OrderCreatedEvent;
+import com.quickcart.common.event.OrderItemEvent;
 import com.quickcart.common.event.DeliveryStatusChangedEvent;
 import com.quickcart.common.exception.ResourceNotFoundException;
 import com.quickcart.dto.*;
 import com.quickcart.entity.Order;
 import com.quickcart.entity.OrderItem;
 import com.quickcart.entity.OrderStatus;
-import com.quickcart.feign.CartClient;
-import com.quickcart.feign.ProductClient;
-import com.quickcart.kafka.OrderProducer;
 import com.quickcart.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +42,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartHelperService cartHelperService;
     private final ProductHelperService productHelperService;
-    private final OrderProducer orderProducer;
 
     private Long getCurrentUserId() {
         String principal = SecurityContextHolder.getContext()
@@ -68,8 +64,13 @@ public class OrderService {
     @Transactional
     public OrderResponseDto placeOrder(OrderRequestDto requestDto) {
         Long userId = getCurrentUserId();
+        Long storeId = requestDto.getStoreId();
 
-        CartResponseDto cart = cartHelperService.getCart().getData();
+        if (storeId == null) {
+            throw new IllegalArgumentException("Store id is required to place an order");
+        }
+
+        CartResponseDto cart = cartHelperService.getCart(storeId).getData();
 
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
@@ -79,8 +80,6 @@ public class OrderService {
         double total = 0;
 
         for (CartItemDto cartItem : cart.getItems()) {
-            productHelperService.deductStock(cartItem.getProductId(), cartItem.getQuantity());
-
             orderItems.add(OrderItem.builder()
                     .productId(cartItem.getProductId())
                     .productName(cartItem.getProductName())
@@ -93,6 +92,7 @@ public class OrderService {
 
         Order order = Order.builder()
                 .userId(userId)
+                .storeId(storeId)
                 .totalAmount(total)
                 .items(orderItems)
                 .status(OrderStatus.CREATED)
@@ -106,14 +106,30 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        cartHelperService.clearCart();
+        List<OrderItemEvent> eventItems = orderItems.stream()
+                .map(item -> new OrderItemEvent(item.getProductId(), item.getQuantity()))
+                .toList();
 
-        orderProducer.publishOrderCreated(OrderCreatedEvent.builder()
+        OrderCreatedEvent orderCreatedEvent = OrderCreatedEvent.builder()
                 .orderId(savedOrder.getId())
                 .userId(userId)
                 .totalAmount(savedOrder.getTotalAmount())
-                .userEmail(getCurrentUserEmail())   // carried from JWT via SecurityContext
-                .build());
+                .userEmail(getCurrentUserEmail())
+                .storeId(storeId)
+                .items(eventItems)
+                .build();
+
+        boolean stockReserved = false;
+        try {
+            productHelperService.reserveStock(orderCreatedEvent);
+            stockReserved = true;
+            cartHelperService.clearCart();
+        } catch (RuntimeException ex) {
+            if (stockReserved) {
+                releaseStockAfterCheckoutFailure(savedOrder.getId(), ex);
+            }
+            throw ex;
+        }
 
         return toDto(savedOrder);
     }
@@ -140,6 +156,7 @@ public class OrderService {
         return OrderResponseDto.builder()
                 .orderId(order.getId())
                 .userId(order.getUserId())
+                .storeId(order.getStoreId())
                 .totalAmount(order.getTotalAmount())
                 .items(items)
                 .status(order.getStatus())
@@ -219,6 +236,16 @@ public class OrderService {
         Long userId = getCurrentUserId();
         if (!order.getUserId().equals(userId)) {
             throw new AccessDeniedException("You can only access your own order");
+        }
+    }
+
+    private void releaseStockAfterCheckoutFailure(Long orderId, RuntimeException checkoutFailure) {
+        try {
+            productHelperService.releaseStock(orderId);
+        } catch (RuntimeException releaseFailure) {
+            checkoutFailure.addSuppressed(releaseFailure);
+            log.error("Failed to release reserved stock after checkout failure for orderId: {}",
+                    orderId, releaseFailure);
         }
     }
 }

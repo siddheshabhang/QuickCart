@@ -23,6 +23,10 @@ public class Delivery {
     @Column(nullable = false)
     private Long userId;
 
+    /** The dark store this delivery is assigned to. */
+    @Column(nullable = false)
+    private Long storeId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DeliveryStatus status;

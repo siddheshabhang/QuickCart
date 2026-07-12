@@ -15,8 +15,8 @@ public class CartHelperService {
 
     @CircuitBreaker(name = "cartService", fallbackMethod = "getCartFallback")
     @Retry(name = "cartServiceRead")
-    public ApiResponse<CartResponseDto> getCart() {
-        return cartClient.getCart();
+    public ApiResponse<CartResponseDto> getCart(Long storeId) {
+        return cartClient.getCart(storeId);
     }
 
     @CircuitBreaker(name = "cartService", fallbackMethod = "clearCartFallback")
@@ -24,7 +24,7 @@ public class CartHelperService {
         return cartClient.clearCart();
     }
 
-    public ApiResponse<CartResponseDto> getCartFallback(Throwable ex) {
+    public ApiResponse<CartResponseDto> getCartFallback(Long storeId, Throwable ex) {
         throw new RuntimeException("Cart service unavailable. Please try again later.");
     }
 

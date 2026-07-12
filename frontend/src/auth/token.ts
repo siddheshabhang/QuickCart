@@ -39,3 +39,30 @@ export function removeTokens(): void {
 export function isLoggedIn(): boolean {
   return !!localStorage.getItem(TOKEN_KEY);
 }
+
+// Store ID management for Dark Stores
+export function saveStoreId(storeId: number): void {
+  localStorage.setItem("storeId", String(storeId));
+}
+
+export function getStoreId(): number | null {
+  const storeId = localStorage.getItem("storeId");
+  return storeId ? parseInt(storeId, 10) : null;
+}
+
+export function removeStoreId(): void {
+  localStorage.removeItem("storeId");
+}
+
+// Address management for checkout pre-fill
+export function saveUserAddress(address: string): void {
+  localStorage.setItem("userAddress", address);
+}
+
+export function getUserAddress(): string | null {
+  return localStorage.getItem("userAddress");
+}
+
+export function removeUserAddress(): void {
+  localStorage.removeItem("userAddress");
+}

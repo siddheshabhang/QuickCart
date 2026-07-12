@@ -1,5 +1,7 @@
 package com.quickcart.service;
 
+import com.quickcart.common.event.OrderCreatedEvent;
+import com.quickcart.common.event.OrderItemEvent;
 import com.quickcart.common.event.PaymentCompletedEvent;
 import com.quickcart.dto.OrderResponseDto;
 import com.quickcart.dto.OrderStatus;
@@ -14,6 +16,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +25,7 @@ import java.util.UUID;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderHelperService orderHelperService;
+    private final ProductHelperService productHelperService;
     private final PaymentProducer paymentProducer;
 
     private Long getCurrentUserId() {
@@ -76,6 +80,11 @@ public class PaymentService {
         ));
 
         if (requestDto.isSimulateSuccess()) {
+            if (existingPayment
+                    .map(existing -> existing.getStatus() == PaymentStatus.FAILED)
+                    .orElse(false)) {
+                productHelperService.reserveStock(toStockReservationEvent(order));
+            }
             payment.setStatus(PaymentStatus.SUCCESS);
             orderHelperService.updateOrderStatus(requestDto.getOrderId(), OrderStatus.CONFIRMED);
         } else {
@@ -88,11 +97,29 @@ public class PaymentService {
         paymentProducer.publishPaymentCompleted(PaymentCompletedEvent.builder()
                 .orderId(requestDto.getOrderId())
                 .userId(order.getUserId())
+                .storeId(order.getStoreId())
                 .status(payment.getStatus().name())
                 .amount(payment.getAmount())
                 .userEmail(getCurrentUserEmail())   // carried from JWT via SecurityContext
                 .build());
         return toDto(payment);
+    }
+
+    private OrderCreatedEvent toStockReservationEvent(OrderResponseDto order) {
+        List<OrderItemEvent> items = order.getItems() == null
+                ? List.of()
+                : order.getItems().stream()
+                        .map(item -> new OrderItemEvent(item.getProductId(), item.getQuantity()))
+                        .toList();
+
+        return OrderCreatedEvent.builder()
+                .orderId(order.getOrderId())
+                .userId(order.getUserId())
+                .storeId(order.getStoreId())
+                .totalAmount(order.getTotalAmount())
+                .userEmail(getCurrentUserEmail())
+                .items(items)
+                .build();
     }
 
     private PaymentResponseDto toDto(Payment payment) {

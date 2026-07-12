@@ -18,11 +18,11 @@ public class ProductHelperService {
 
     @CircuitBreaker(name = "productService", fallbackMethod = "getProductFallback")
     @Retry(name = "productService")
-    public ApiResponse<ProductResponseDto> getProductById(Long productId) {
-        return productClient.getProductById(productId);
+    public ApiResponse<ProductResponseDto> getProductById(Long productId, Long storeId) {
+        return productClient.getProductById(productId, storeId);
     }
 
-    public ApiResponse<ProductResponseDto> getProductFallback(Long productId, Throwable ex) {
+    public ApiResponse<ProductResponseDto> getProductFallback(Long productId, Long storeId, Throwable ex) {
         if (ex instanceof FeignException.NotFound) {
             throw new ResourceNotFoundException("Product not found with Id " + productId);
         }

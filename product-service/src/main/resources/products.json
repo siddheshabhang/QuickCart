@@ -1,0 +1,602 @@
+[
+    {
+        "name": "Local Farmer Mango",
+        "price": 137.46,
+        "description": "High quality mango from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400"
+    },
+    {
+        "name": "Haldiram Juice",
+        "price": 213.51,
+        "description": "High quality juice from Haldiram.",
+        "imageUrl": "https://images.unsplash.com/photo-1600271886742-f049cd451b02?w=400"
+    },
+    {
+        "name": "Parle Biscuits",
+        "price": 112.74,
+        "description": "High quality biscuits from Parle.",
+        "imageUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400"
+    },
+    {
+        "name": "Lays Coffee",
+        "price": 177.58,
+        "description": "High quality coffee from Lays.",
+        "imageUrl": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?w=400"
+    },
+    {
+        "name": "Amul Paneer",
+        "price": 97.69,
+        "description": "High quality paneer from Amul.",
+        "imageUrl": "https://images.unsplash.com/photo-1589136777351-fdc9c9cb164f?w=400"
+    },
+    {
+        "name": "Local Farmer Onion",
+        "price": 246.26,
+        "description": "High quality onion from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=400"
+    },
+    {
+        "name": "Haldiram Biscuits",
+        "price": 149.58,
+        "description": "High quality biscuits from Haldiram.",
+        "imageUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400"
+    },
+    {
+        "name": "Pepsi Chips",
+        "price": 163.02,
+        "description": "High quality chips from Pepsi.",
+        "imageUrl": "https://images.unsplash.com/photo-1566478989037-e8064dc9ab36?w=400"
+    },
+    {
+        "name": "Fresh Grapes",
+        "price": 158.27,
+        "description": "High quality grapes from Fresh.",
+        "imageUrl": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400"
+    },
+    {
+        "name": "Fresh Onion",
+        "price": 296.74,
+        "description": "High quality onion from Fresh.",
+        "imageUrl": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=400"
+    },
+    {
+        "name": "Amul Eggs",
+        "price": 242.67,
+        "description": "High quality eggs from Amul.",
+        "imageUrl": "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=400"
+    },
+    {
+        "name": "Fresh Potato",
+        "price": 216.54,
+        "description": "High quality potato from Fresh.",
+        "imageUrl": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400"
+    },
+    {
+        "name": "Aashirvaad Toor Dal",
+        "price": 29.39,
+        "description": "High quality toor dal from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1585935406714-dbdfc18b76e1?w=400"
+    },
+    {
+        "name": "Dove Shampoo",
+        "price": 237.67,
+        "description": "High quality shampoo from Dove.",
+        "imageUrl": "https://images.unsplash.com/photo-1626783404554-b37180327f27?w=400"
+    },
+    {
+        "name": "India Gate Cooking Oil",
+        "price": 15.73,
+        "description": "High quality cooking oil from India Gate.",
+        "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"
+    },
+    {
+        "name": "Fortune Salt",
+        "price": 74.1,
+        "description": "High quality salt from Fortune.",
+        "imageUrl": "https://images.unsplash.com/photo-1516053531332-9b244d21262d?w=400"
+    },
+    {
+        "name": "Himalaya Toothpaste",
+        "price": 109.96,
+        "description": "High quality toothpaste from Himalaya.",
+        "imageUrl": "https://images.unsplash.com/photo-1559182390-3ae8e682d334?w=400"
+    },
+    {
+        "name": "Local Farmer Lemon",
+        "price": 230.08,
+        "description": "High quality lemon from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1523450001402-383fbbfda2c7?w=400"
+    },
+    {
+        "name": "Aashirvaad Rice",
+        "price": 133.15,
+        "description": "High quality rice from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400"
+    },
+    {
+        "name": "Parle Chips",
+        "price": 275.49,
+        "description": "High quality chips from Parle.",
+        "imageUrl": "https://images.unsplash.com/photo-1566478989037-e8064dc9ab36?w=400"
+    },
+    {
+        "name": "Colgate Toothpaste",
+        "price": 181.18,
+        "description": "High quality toothpaste from Colgate.",
+        "imageUrl": "https://images.unsplash.com/photo-1559182390-3ae8e682d334?w=400"
+    },
+    {
+        "name": "Organic Farm Grapes",
+        "price": 10.23,
+        "description": "High quality grapes from Organic Farm.",
+        "imageUrl": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400"
+    },
+    {
+        "name": "Coca Cola Coffee",
+        "price": 24.66,
+        "description": "High quality coffee from Coca Cola.",
+        "imageUrl": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?w=400"
+    },
+    {
+        "name": "Amul Cheese",
+        "price": 19.33,
+        "description": "High quality cheese from Amul.",
+        "imageUrl": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400"
+    },
+    {
+        "name": "Britannia Cheese",
+        "price": 250.72,
+        "description": "High quality cheese from Britannia.",
+        "imageUrl": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400"
+    },
+    {
+        "name": "Haldiram Chips",
+        "price": 10.97,
+        "description": "High quality chips from Haldiram.",
+        "imageUrl": "https://images.unsplash.com/photo-1566478989037-e8064dc9ab36?w=400"
+    },
+    {
+        "name": "Amul Croissant",
+        "price": 114.53,
+        "description": "High quality croissant from Amul.",
+        "imageUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400"
+    },
+    {
+        "name": "Aashirvaad Sugar",
+        "price": 45.62,
+        "description": "High quality sugar from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1581452243456-62153594d750?w=400"
+    },
+    {
+        "name": "Nivea Face Wash",
+        "price": 163.41,
+        "description": "High quality face wash from Nivea.",
+        "imageUrl": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400"
+    },
+    {
+        "name": "Tata Rice",
+        "price": 225.81,
+        "description": "High quality rice from Tata.",
+        "imageUrl": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400"
+    },
+    {
+        "name": "Pepsi Coffee",
+        "price": 256.84,
+        "description": "High quality coffee from Pepsi.",
+        "imageUrl": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?w=400"
+    },
+    {
+        "name": "India Gate Salt",
+        "price": 259.41,
+        "description": "High quality salt from India Gate.",
+        "imageUrl": "https://images.unsplash.com/photo-1516053531332-9b244d21262d?w=400"
+    },
+    {
+        "name": "Pepsi Energy Drink",
+        "price": 47.48,
+        "description": "High quality energy drink from Pepsi.",
+        "imageUrl": "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=400"
+    },
+    {
+        "name": "Local Farmer Tomato",
+        "price": 294.94,
+        "description": "High quality tomato from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1518136247453-74e7b5265980?w=400"
+    },
+    {
+        "name": "Colgate Deodorant",
+        "price": 133.98,
+        "description": "High quality deodorant from Colgate.",
+        "imageUrl": "https://images.unsplash.com/photo-1608248593452-f41857948a43?w=400"
+    },
+    {
+        "name": "Britannia Croissant",
+        "price": 64.69,
+        "description": "High quality croissant from Britannia.",
+        "imageUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400"
+    },
+    {
+        "name": "Gowardhan Pav",
+        "price": 157.17,
+        "description": "High quality pav from Gowardhan.",
+        "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400"
+    },
+    {
+        "name": "Local Farmer Spinach",
+        "price": 73.38,
+        "description": "High quality spinach from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400"
+    },
+    {
+        "name": "Tata Sugar",
+        "price": 219.85,
+        "description": "High quality sugar from Tata.",
+        "imageUrl": "https://images.unsplash.com/photo-1581452243456-62153594d750?w=400"
+    },
+    {
+        "name": "Haldiram Tea",
+        "price": 227.24,
+        "description": "High quality tea from Haldiram.",
+        "imageUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400"
+    },
+    {
+        "name": "Organic Farm Potato",
+        "price": 229.6,
+        "description": "High quality potato from Organic Farm.",
+        "imageUrl": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400"
+    },
+    {
+        "name": "Organic Farm Apple",
+        "price": 297.48,
+        "description": "High quality apple from Organic Farm.",
+        "imageUrl": "https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?w=400"
+    },
+    {
+        "name": "Pepsi Juice",
+        "price": 209.52,
+        "description": "High quality juice from Pepsi.",
+        "imageUrl": "https://images.unsplash.com/photo-1600271886742-f049cd451b02?w=400"
+    },
+    {
+        "name": "Himalaya Soap",
+        "price": 215.3,
+        "description": "High quality soap from Himalaya.",
+        "imageUrl": "https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=400"
+    },
+    {
+        "name": "Himalaya Hair Oil",
+        "price": 56.96,
+        "description": "High quality hair oil from Himalaya.",
+        "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"
+    },
+    {
+        "name": "Lays Namkeen",
+        "price": 45.06,
+        "description": "High quality namkeen from Lays.",
+        "imageUrl": "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400"
+    },
+    {
+        "name": "Local Farmer Apple",
+        "price": 283.57,
+        "description": "High quality apple from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?w=400"
+    },
+    {
+        "name": "Gowardhan Paneer",
+        "price": 35.92,
+        "description": "High quality paneer from Gowardhan.",
+        "imageUrl": "https://images.unsplash.com/photo-1589136777351-fdc9c9cb164f?w=400"
+    },
+    {
+        "name": "Nivea Toothpaste",
+        "price": 205.14,
+        "description": "High quality toothpaste from Nivea.",
+        "imageUrl": "https://images.unsplash.com/photo-1559182390-3ae8e682d334?w=400"
+    },
+    {
+        "name": "Parle Energy Drink",
+        "price": 121.82,
+        "description": "High quality energy drink from Parle.",
+        "imageUrl": "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=400"
+    },
+    {
+        "name": "Fortune Moong Dal",
+        "price": 289.38,
+        "description": "High quality moong dal from Fortune.",
+        "imageUrl": "https://images.unsplash.com/photo-1585935406714-dbdfc18b76e1?w=400"
+    },
+    {
+        "name": "Britannia Milk",
+        "price": 18.46,
+        "description": "High quality milk from Britannia.",
+        "imageUrl": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400"
+    },
+    {
+        "name": "Colgate Body Lotion",
+        "price": 253.37,
+        "description": "High quality body lotion from Colgate.",
+        "imageUrl": "https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=400"
+    },
+    {
+        "name": "Organic Farm Lemon",
+        "price": 96.91,
+        "description": "High quality lemon from Organic Farm.",
+        "imageUrl": "https://images.unsplash.com/photo-1523450001402-383fbbfda2c7?w=400"
+    },
+    {
+        "name": "Dove Soap",
+        "price": 133.6,
+        "description": "High quality soap from Dove.",
+        "imageUrl": "https://images.unsplash.com/photo-1600857062241-98e5dba7f214?w=400"
+    },
+    {
+        "name": "Aashirvaad Ghee",
+        "price": 91.72,
+        "description": "High quality ghee from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1604085792782-8d92f276d7d8?w=400"
+    },
+    {
+        "name": "India Gate Sugar",
+        "price": 111.82,
+        "description": "High quality sugar from India Gate.",
+        "imageUrl": "https://images.unsplash.com/photo-1581452243456-62153594d750?w=400"
+    },
+    {
+        "name": "Lays Tea",
+        "price": 12.26,
+        "description": "High quality tea from Lays.",
+        "imageUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400"
+    },
+    {
+        "name": "Amul Butter",
+        "price": 230.23,
+        "description": "High quality butter from Amul.",
+        "imageUrl": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400"
+    },
+    {
+        "name": "Fortune Rice",
+        "price": 18.34,
+        "description": "High quality rice from Fortune.",
+        "imageUrl": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400"
+    },
+    {
+        "name": "Himalaya Body Lotion",
+        "price": 173.65,
+        "description": "High quality body lotion from Himalaya.",
+        "imageUrl": "https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=400"
+    },
+    {
+        "name": "Dove Hair Oil",
+        "price": 211.89,
+        "description": "High quality hair oil from Dove.",
+        "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"
+    },
+    {
+        "name": "Mother Dairy Paneer",
+        "price": 175.14,
+        "description": "High quality paneer from Mother Dairy.",
+        "imageUrl": "https://images.unsplash.com/photo-1589136777351-fdc9c9cb164f?w=400"
+    },
+    {
+        "name": "Colgate Hair Oil",
+        "price": 278.55,
+        "description": "High quality hair oil from Colgate.",
+        "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"
+    },
+    {
+        "name": "Gowardhan Yogurt",
+        "price": 180.32,
+        "description": "High quality yogurt from Gowardhan.",
+        "imageUrl": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400"
+    },
+    {
+        "name": "Colgate Face Wash",
+        "price": 150.84,
+        "description": "High quality face wash from Colgate.",
+        "imageUrl": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400"
+    },
+    {
+        "name": "Coca Cola Energy Drink",
+        "price": 172.05,
+        "description": "High quality energy drink from Coca Cola.",
+        "imageUrl": "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=400"
+    },
+    {
+        "name": "Aashirvaad Wheat Flour",
+        "price": 191.97,
+        "description": "High quality wheat flour from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400"
+    },
+    {
+        "name": "Organic Farm Spinach",
+        "price": 217.11,
+        "description": "High quality spinach from Organic Farm.",
+        "imageUrl": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400"
+    },
+    {
+        "name": "Pepsi Tea",
+        "price": 28.12,
+        "description": "High quality tea from Pepsi.",
+        "imageUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400"
+    },
+    {
+        "name": "Amul Milk",
+        "price": 105.44,
+        "description": "High quality milk from Amul.",
+        "imageUrl": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400"
+    },
+    {
+        "name": "Aashirvaad Moong Dal",
+        "price": 33.47,
+        "description": "High quality moong dal from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1585935406714-dbdfc18b76e1?w=400"
+    },
+    {
+        "name": "Dove Toothpaste",
+        "price": 33.24,
+        "description": "High quality toothpaste from Dove.",
+        "imageUrl": "https://images.unsplash.com/photo-1559182390-3ae8e682d334?w=400"
+    },
+    {
+        "name": "Local Farmer Banana",
+        "price": 63.04,
+        "description": "High quality banana from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=400"
+    },
+    {
+        "name": "Coca Cola Biscuits",
+        "price": 99.86,
+        "description": "High quality biscuits from Coca Cola.",
+        "imageUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400"
+    },
+    {
+        "name": "Organic Farm Tomato",
+        "price": 146.44,
+        "description": "High quality tomato from Organic Farm.",
+        "imageUrl": "https://images.unsplash.com/photo-1518136247453-74e7b5265980?w=400"
+    },
+    {
+        "name": "Mother Dairy Croissant",
+        "price": 51.46,
+        "description": "High quality croissant from Mother Dairy.",
+        "imageUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400"
+    },
+    {
+        "name": "Mother Dairy Milk",
+        "price": 115.04,
+        "description": "High quality milk from Mother Dairy.",
+        "imageUrl": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400"
+    },
+    {
+        "name": "Gillette Deodorant",
+        "price": 180.4,
+        "description": "High quality deodorant from Gillette.",
+        "imageUrl": "https://images.unsplash.com/photo-1608248593452-f41857948a43?w=400"
+    },
+    {
+        "name": "Balaji Tea",
+        "price": 254.68,
+        "description": "High quality tea from Balaji.",
+        "imageUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400"
+    },
+    {
+        "name": "Himalaya Deodorant",
+        "price": 105.52,
+        "description": "High quality deodorant from Himalaya.",
+        "imageUrl": "https://images.unsplash.com/photo-1608248593452-f41857948a43?w=400"
+    },
+    {
+        "name": "Haldiram Namkeen",
+        "price": 91.18,
+        "description": "High quality namkeen from Haldiram.",
+        "imageUrl": "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400"
+    },
+    {
+        "name": "Mother Dairy Yogurt",
+        "price": 197.6,
+        "description": "High quality yogurt from Mother Dairy.",
+        "imageUrl": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400"
+    },
+    {
+        "name": "Haldiram Energy Drink",
+        "price": 92.97,
+        "description": "High quality energy drink from Haldiram.",
+        "imageUrl": "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=400"
+    },
+    {
+        "name": "Fresh Apple",
+        "price": 291.98,
+        "description": "High quality apple from Fresh.",
+        "imageUrl": "https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?w=400"
+    },
+    {
+        "name": "Gillette Toothpaste",
+        "price": 160.58,
+        "description": "High quality toothpaste from Gillette.",
+        "imageUrl": "https://images.unsplash.com/photo-1559182390-3ae8e682d334?w=400"
+    },
+    {
+        "name": "Parle Cold Drink",
+        "price": 188.26,
+        "description": "High quality cold drink from Parle.",
+        "imageUrl": "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=400"
+    },
+    {
+        "name": "Nivea Shampoo",
+        "price": 35.33,
+        "description": "High quality shampoo from Nivea.",
+        "imageUrl": "https://images.unsplash.com/photo-1626783404554-b37180327f27?w=400"
+    },
+    {
+        "name": "Gillette Hair Oil",
+        "price": 139.02,
+        "description": "High quality hair oil from Gillette.",
+        "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"
+    },
+    {
+        "name": "Fortune Sugar",
+        "price": 259.44,
+        "description": "High quality sugar from Fortune.",
+        "imageUrl": "https://images.unsplash.com/photo-1581452243456-62153594d750?w=400"
+    },
+    {
+        "name": "Local Farmer Grapes",
+        "price": 106.54,
+        "description": "High quality grapes from Local Farmer.",
+        "imageUrl": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400"
+    },
+    {
+        "name": "Aashirvaad Salt",
+        "price": 43.37,
+        "description": "High quality salt from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1516053531332-9b244d21262d?w=400"
+    },
+    {
+        "name": "Mother Dairy Bread",
+        "price": 249.59,
+        "description": "High quality bread from Mother Dairy.",
+        "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400"
+    },
+    {
+        "name": "Gillette Shampoo",
+        "price": 185.73,
+        "description": "High quality shampoo from Gillette.",
+        "imageUrl": "https://images.unsplash.com/photo-1626783404554-b37180327f27?w=400"
+    },
+    {
+        "name": "Pepsi Biscuits",
+        "price": 296.58,
+        "description": "High quality biscuits from Pepsi.",
+        "imageUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400"
+    },
+    {
+        "name": "Himalaya Face Wash",
+        "price": 212.72,
+        "description": "High quality face wash from Himalaya.",
+        "imageUrl": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400"
+    },
+    {
+        "name": "Aashirvaad Cooking Oil",
+        "price": 226.19,
+        "description": "High quality cooking oil from Aashirvaad.",
+        "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"
+    },
+    {
+        "name": "Tata Ghee",
+        "price": 261.37,
+        "description": "High quality ghee from Tata.",
+        "imageUrl": "https://images.unsplash.com/photo-1604085792782-8d92f276d7d8?w=400"
+    },
+    {
+        "name": "Fortune Toor Dal",
+        "price": 43.97,
+        "description": "High quality toor dal from Fortune.",
+        "imageUrl": "https://images.unsplash.com/photo-1585935406714-dbdfc18b76e1?w=400"
+    },
+    {
+        "name": "Organic Farm Banana",
+        "price": 118.88,
+        "description": "High quality banana from Organic Farm.",
+        "imageUrl": "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=400"
+    }
+]

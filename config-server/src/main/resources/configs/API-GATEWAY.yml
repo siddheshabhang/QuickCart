@@ -18,6 +18,7 @@ spring:
               - Content-Type
               - X-Idempotency-Key
               - X-Admin-Setup-Key
+              - X-Store-Id
             allowCredentials: false
       routes:
         - id: auth-service
@@ -28,6 +29,10 @@ spring:
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/products/**
+        - id: store-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/stores/**
         - id: cart-service
           uri: lb://CART-SERVICE
           predicates:

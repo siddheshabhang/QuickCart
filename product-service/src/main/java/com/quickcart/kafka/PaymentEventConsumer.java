@@ -64,13 +64,13 @@ public class PaymentEventConsumer {
         switch (status) {
             case "SUCCESS" -> {
                 // Payment went through: permanently keep the deducted stock
-                stockReservationService.confirmReservation(orderId);
-                log.info("Reservation CONFIRMED for orderId: {}", orderId);
+                stockReservationService.confirmReservations(orderId);
+                log.info("Reservations CONFIRMED for orderId: {}", orderId);
             }
             case "FAILED" -> {
                 // Payment failed: give the stock back
-                stockReservationService.releaseReservation(orderId);
-                log.info("Reservation RELEASED for orderId: {}", orderId);
+                stockReservationService.releaseReservations(orderId);
+                log.info("Reservations RELEASED for orderId: {}", orderId);
             }
             default -> log.warn("Unknown payment status '{}' for orderId: {} — ignoring", status, orderId);
         }

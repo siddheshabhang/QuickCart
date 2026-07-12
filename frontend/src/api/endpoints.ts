@@ -13,11 +13,21 @@ export interface AuthResponse {
   tokenType: string;
 }
 
+export interface StoreResponseDto {
+  storeId: number | null;
+  storeName: string | null;
+  city: string | null;
+  distanceKm: number | null;
+  deliverable: boolean;
+  message: string | null;
+}
+
 export interface Product {
   id: number;
   name: string;
   price: number;
   description: string;
+  imageUrl?: string;
   stock: number;
   available: boolean;
 }
@@ -80,6 +90,11 @@ export const refreshToken = (refreshToken: string) =>
 
 export const getGoogleLoginUrl = () =>
   `${API_BASE_URL}/auth/oauth2/authorization/google`;
+
+// ─── Stores ───────────────────────────────────────────────────────────────────
+
+export const getNearestStore = (lat: number, lng: number) =>
+  apiClient<StoreResponseDto>("GET", `/stores/nearest?lat=${lat}&lng=${lng}`);
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
@@ -151,3 +166,6 @@ export const updateDeliveryStatus = (orderId: number, status: string) =>
 
 export const verifyOtp = (orderId: number, otp: string) =>
   apiClient<null>("POST", `/delivery/${orderId}/verify-otp?otp=${otp}`);
+
+export const resendOtp = (orderId: number) =>
+  apiClient<null>("POST", `/delivery/${orderId}/resend-otp`);

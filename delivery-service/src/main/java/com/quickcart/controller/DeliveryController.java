@@ -56,4 +56,12 @@ public class DeliveryController {
         deliveryService.verifyOtp(orderId, otp);
         return ResponseEntity.ok(new ApiResponse<>(true, "Order delivered successfully", null));
     }
+
+    @PostMapping("/{orderId}/resend-otp")
+    @PreAuthorize("hasRole('DELIVERY')")
+    public ResponseEntity<ApiResponse<Void>> resendOtp(
+            @PathVariable("orderId") Long orderId) {
+        deliveryService.resendOtp(orderId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "OTP resent successfully", null));
+    }
 }

@@ -21,6 +21,7 @@ public class ProductResponseDto {
     private String name;
     private double price;
     private String description;
+    private String imageUrl;
     private Integer stock;
     private boolean available;
     private LocalDateTime createdAt;

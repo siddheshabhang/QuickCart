@@ -57,7 +57,7 @@ public class DeliveryService {
      * Persisting it here avoids any Feign call when we later need to send the OTP email.
      */
     @Transactional
-    public void createDelivery(Long orderId, Long userId, String userEmail) {
+    public void createDelivery(Long orderId, Long userId, Long storeId, String userEmail) {
         if (deliveryRepository.findByOrderId(orderId).isPresent()) {
             log.warn("Delivery already exists for orderId: {}", orderId);
             return;
@@ -66,6 +66,7 @@ public class DeliveryService {
         Delivery delivery = Delivery.builder()
                 .orderId(orderId)
                 .userId(userId)
+                .storeId(storeId)
                 .userEmail(userEmail)
                 .status(DeliveryStatus.ASSIGNED)
                 .build();
@@ -149,6 +150,24 @@ public class DeliveryService {
         }
     }
 
+    /**
+     * Resends the OTP to the customer if the order is still OUT_FOR_DELIVERY.
+     */
+    @Transactional
+    public void resendOtp(Long orderId) {
+        Delivery delivery = deliveryRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Delivery not found for orderId: " + orderId));
+
+        if (delivery.getStatus() != DeliveryStatus.OUT_FOR_DELIVERY) {
+            throw new IllegalStateException("OTP can only be resent when status is OUT_FOR_DELIVERY");
+        }
+
+        String otp = otpService.generateOtp(orderId);
+        log.warn("DEV ONLY — New OTP for orderId {}: {}", orderId, otp);
+        emailService.sendOtp(delivery.getUserEmail(), otp, orderId);
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Private helpers
     // ─────────────────────────────────────────────────────────────────────────
@@ -167,6 +186,7 @@ public class DeliveryService {
                 .id(delivery.getId())
                 .orderId(delivery.getOrderId())
                 .userId(delivery.getUserId())
+                .storeId(delivery.getStoreId())
                 .status(delivery.getStatus())
                 .createdAt(delivery.getCreatedAt())
                 .build();

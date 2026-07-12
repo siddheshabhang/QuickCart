@@ -12,6 +12,7 @@ public class DeliveryResponseDto {
     private Long id;
     private Long orderId;
     private Long userId;
+    private Long storeId;
     private DeliveryStatus status;
     private LocalDateTime createdAt;
 }

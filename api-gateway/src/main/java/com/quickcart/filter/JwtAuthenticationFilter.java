@@ -21,7 +21,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private static final List<String> PUBLIC_ROUTES = List.of("/auth/");
     private static final List<String> TRUSTED_HEADERS = List.of(
-            "X-User-Email", "X-User-Role", "X-User-Id", "X-Internal-Service"
+            "X-User-Email", "X-User-Role", "X-User-Id", "X-Internal-Service", "X-Store-Id"
     );
 
     @Override
@@ -55,12 +55,24 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         String role = jwtService.extractRole(token);
         Long userId = jwtService.extractUserId(token);
 
+        // 1. Extract X-Store-Id from original request BEFORE removing trusted headers
+        String storeId = exchange.getRequest().getHeaders().getFirst("X-Store-Id");
+
         var requestBuilder = exchange.getRequest().mutate();
+        
+        // 2. Remove all trusted headers so clients can't spoof them
         requestBuilder.headers(headers -> TRUSTED_HEADERS.forEach(headers::remove));
+
+        // 3. Forward JWT-derived user context
         requestBuilder
                 .header("X-User-Email", email != null ? email : "")
                 .header("X-User-Role", role != null ? role : "")
                 .header("X-User-Id", userId != null ? userId.toString() : "");
+
+        // 4. Re-add the valid X-Store-Id we extracted earlier
+        if (storeId != null && !storeId.isBlank()) {
+            requestBuilder.header("X-Store-Id", storeId);
+        }
 
         ServerWebExchange modifiedExchange = exchange.mutate()
                 .request(requestBuilder.build())

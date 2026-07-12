@@ -19,9 +19,11 @@ public class FeignConfig {
                 String email  = request.getHeader("X-User-Email");
                 String role   = request.getHeader("X-User-Role");
                 String userId = request.getHeader("X-User-Id");
+                String storeId = request.getHeader("X-Store-Id");
                 if (email != null)  requestTemplate.header("X-User-Email", email);
                 if (role != null)   requestTemplate.header("X-User-Role", role);
                 if (userId != null) requestTemplate.header("X-User-Id", userId);
+                if (storeId != null) requestTemplate.header("X-Store-Id", storeId);
                 requestTemplate.header("X-Internal-Service", "ORDER-SERVICE");
             }
         };

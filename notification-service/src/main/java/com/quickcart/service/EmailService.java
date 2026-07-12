@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
  *
  * <p>Sends transactional emails for every key event in the QuickCart order lifecycle:
  * <ul>
- *   <li>Order placed</li>
- *   <li>Payment success / failure</li>
+ *   <li>Payment confirmed (serves as the primary order confirmation) / payment failed</li>
  *   <li>Delivery status updates (assigned, out for delivery, delivered, failed)</li>
  * </ul>
  *
@@ -33,21 +32,6 @@ public class EmailService {
 
     @Value("${spring.mail.from}")
     private String from;
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Order emails
-    // ─────────────────────────────────────────────────────────────────────────
-
-    public void sendOrderConfirmation(String to, Long orderId, Double amount) {
-        send(to,
-                "QuickCart — Order #" + orderId + " Placed!",
-                "Hi there!\n\n"
-                + "Your order has been successfully placed.\n\n"
-                + "Order ID : #" + orderId + "\n"
-                + "Total    : ₹" + String.format("%.2f", amount) + "\n\n"
-                + "We'll notify you once your payment is confirmed.\n\n"
-                + "Thank you for shopping with QuickCart!");
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Payment emails

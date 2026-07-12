@@ -3,9 +3,13 @@ package com.quickcart.service;
 import com.quickcart.common.exception.ResourceNotFoundException;
 import com.quickcart.dto.ProductRequestDto;
 import com.quickcart.common.dto.ProductResponseDto;
+import com.quickcart.entity.Inventory;
 import com.quickcart.entity.Product;
+import com.quickcart.entity.Store;
 import com.quickcart.mapper.ProductMapper;
+import com.quickcart.repository.InventoryRepository;
 import com.quickcart.repository.ProductRepository;
+import com.quickcart.repository.StoreRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,12 +26,36 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final InventoryRepository inventoryRepository;
+    private final StoreRepository storeRepository;
     private final ProductMapper productMapper;
 
-    public List<ProductResponseDto> getAllProducts() {
-        return productRepository.findAll()
+    /**
+     * Returns all products available at a specific dark store.
+     *
+     * <p>Only includes products with quantity > 0 in the store's inventory.
+     * The {@code stock} field in the response reflects this store's quantity.
+     *
+     * @param storeId the dark store assigned to the customer (from X-Store-Id header)
+     */
+    public List<ProductResponseDto> getAllProducts(Long storeId) {
+        if (storeId == null) {
+            // Admin/internal call with no store context — return all products
+            return productRepository.findAll()
+                    .stream()
+                    .map(productMapper::toDto)
+                    .toList();
+        }
+
+        return inventoryRepository
+                .findByStoreIdAndQuantityGreaterThan(storeId, 0)
                 .stream()
-                .map(productMapper::toDto)
+                .map(inv -> {
+                    Product product = productRepository.findById(inv.getProductId())
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    "Product not found: " + inv.getProductId()));
+                    return productMapper.toDto(product, inv.getQuantity());
+                })
                 .toList();
     }
 
@@ -40,16 +68,36 @@ public class ProductService {
                 .name(productRequestDto.getName())
                 .price(productRequestDto.getPrice())
                 .description(productRequestDto.getDescription())
-                .stock(productRequestDto.getStock())
                 .build();
-        return productMapper.toDto(productRepository.save(product));
+        Product saved = productRepository.save(product);
+
+        // Seed an Inventory row for every active dark store so the product
+        // is immediately visible in the catalogue.
+        // Without this, customers would see no inventory for the new product.
+        List<Store> activeStores = storeRepository.findByActiveTrue();
+        for (Store store : activeStores) {
+            inventoryRepository.save(Inventory.builder()
+                    .storeId(store.getId())
+                    .productId(saved.getId())
+                    .quantity(productRequestDto.getStock())
+                    .build());
+        }
+
+        return productMapper.toDto(saved, productRequestDto.getStock());
     }
 
-    public ProductResponseDto getProductById(Long id) {
+    public ProductResponseDto getProductById(Long id, Long storeId) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product not found with Id " + id)
                 );
+        
+        if (storeId != null) {
+            return inventoryRepository.findByStoreIdAndProductId(storeId, id)
+                    .map(inv -> productMapper.toDto(product, inv.getQuantity()))
+                    .orElseGet(() -> productMapper.toDto(product, 0)); // No inventory for store
+        }
+        
         return productMapper.toDto(product);
     }
 
@@ -65,10 +113,24 @@ public class ProductService {
         product.setName(requestDto.getName());
         product.setPrice(requestDto.getPrice());
         product.setDescription(requestDto.getDescription());
-        product.setStock(requestDto.getStock());
-
         productRepository.save(product);
-        return productMapper.toDto(product);
+
+        // Upsert inventory across all active stores so the stock value
+        // submitted by the store owner is actually persisted.
+        // Previously this was validated but silently discarded.
+        List<Store> activeStores = storeRepository.findByActiveTrue();
+        for (Store store : activeStores) {
+            Inventory inv = inventoryRepository
+                    .findByStoreIdAndProductId(store.getId(), id)
+                    .orElseGet(() -> Inventory.builder()
+                            .storeId(store.getId())
+                            .productId(id)
+                            .build());
+            inv.setQuantity(requestDto.getStock());
+            inventoryRepository.save(inv);
+        }
+
+        return productMapper.toDto(product, requestDto.getStock());
     }
 
     @Transactional
@@ -85,23 +147,39 @@ public class ProductService {
         return productRepository.findAll(pageable).map(productMapper::toDto);
     }
 
-    public List<ProductResponseDto> searchProducts(String name, double minPrice, double maxPrice) {
-        return productRepository
-                .findByNameContainingIgnoreCaseAndPriceBetween(name, minPrice, maxPrice)
-                .stream()
-                .map(productMapper::toDto)
-                .toList();
+    public List<ProductResponseDto> searchProducts(String name, double minPrice, double maxPrice, Long storeId) {
+        if (storeId == null) {
+            return productRepository
+                    .findByNameContainingIgnoreCaseAndPriceBetween(name, minPrice, maxPrice)
+                    .stream()
+                    .map(productMapper::toDto)
+                    .toList();
+        } else {
+            return inventoryRepository
+                    .searchAvailableProductsInStore(storeId, name, minPrice, maxPrice)
+                    .stream()
+                    .map(inv -> productMapper.toDto(inv.getProduct(), inv.getQuantity()))
+                    .toList();
+        }
     }
 
-    public List<ProductResponseDto> filterProducts(String name, Double minPrice, Double maxPrice) {
-        Specification<Product> spec = Specification
-                .where(hasName(name))
-                .and(hasMinPrice(minPrice))
-                .and(hasMaxPrice(maxPrice));
-        return productRepository.findAll(spec)
-                .stream()
-                .map(productMapper::toDto)
-                .toList();
+    public List<ProductResponseDto> filterProducts(String name, Double minPrice, Double maxPrice, Long storeId) {
+        if (storeId == null) {
+            Specification<Product> spec = Specification
+                    .where(hasName(name))
+                    .and(hasMinPrice(minPrice))
+                    .and(hasMaxPrice(maxPrice));
+            return productRepository.findAll(spec)
+                    .stream()
+                    .map(productMapper::toDto)
+                    .toList();
+        } else {
+            return inventoryRepository
+                    .filterAvailableProductsInStore(storeId, name, minPrice, maxPrice)
+                    .stream()
+                    .map(inv -> productMapper.toDto(inv.getProduct(), inv.getQuantity()))
+                    .toList();
+        }
     }
 
     // ── Specification helpers ──────────────────────────────────────────────────
@@ -127,11 +205,4 @@ public class ProductService {
         };
     }
 
-    @Transactional
-    public void deductStock(Long id, int quantity) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with Id " + id));
-        product.deductStock(quantity);
-        productRepository.save(product);
-    }
 }
